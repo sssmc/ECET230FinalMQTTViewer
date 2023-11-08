@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ECET230FinalMQTTViewerDeskt
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ECET230FinalMQTTViewerMeadow", "ECET230FinalMQTTViewerMeadow\ECET230FinalMQTTViewerMeadow.csproj", "{E83785A0-247E-4D11-AB20-BF7DDEB58EE4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MQTTScreen", "MQTTScreen\MQTTScreen.csproj", "{F93525B5-4227-468B-ACF6-409299299CC8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MQTTServerConnection", "MQTTServerConnection\MQTTServerConnection.csproj", "{65A2EB11-089B-4FBD-9528-A1BC92E1A194}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,6 +29,14 @@ Global
 		{E83785A0-247E-4D11-AB20-BF7DDEB58EE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E83785A0-247E-4D11-AB20-BF7DDEB58EE4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E83785A0-247E-4D11-AB20-BF7DDEB58EE4}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{F93525B5-4227-468B-ACF6-409299299CC8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F93525B5-4227-468B-ACF6-409299299CC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F93525B5-4227-468B-ACF6-409299299CC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F93525B5-4227-468B-ACF6-409299299CC8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65A2EB11-089B-4FBD-9528-A1BC92E1A194}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65A2EB11-089B-4FBD-9528-A1BC92E1A194}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65A2EB11-089B-4FBD-9528-A1BC92E1A194}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65A2EB11-089B-4FBD-9528-A1BC92E1A194}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
