@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\MQTTServerConnection\MQTTServerConnection.csproj" />
+  </ItemGroup>
+
 </Project>
