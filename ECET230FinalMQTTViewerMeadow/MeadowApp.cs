@@ -50,7 +50,7 @@ namespace ECET230FinalMQTTViewerMeadow
             display = new Ili9341
             (
                 spiBus: Device.CreateSpiBus(),
-                chipSelectPin: Device.Pins.D13,
+                chipSelectPin: Device.Pins.D11,
                 dcPin: Device.Pins.D14,
                 resetPin: Device.Pins.D15,
                 width: 240, height: 320
