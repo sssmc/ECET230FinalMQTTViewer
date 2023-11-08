@@ -21,6 +21,7 @@ using MQTTnet.Client.Subscribing;
 using MQTTnet.Client.Connecting;
 using MQTTnet.Client.Disconnecting;
 using Meadow.Hardware;
+using System.IO.Ports;
 
 namespace ECET230FinalMQTTViewerMeadow
 {
@@ -31,6 +32,8 @@ namespace ECET230FinalMQTTViewerMeadow
 
         MicroGraphics graphics;
         Ili9341 display;
+
+        ISerialMessagePort serialPort;
 
         public override Task Initialize()
         {
@@ -78,7 +81,21 @@ namespace ECET230FinalMQTTViewerMeadow
                 Resolver.Log.Error($"Failed to Connect to Wifi: : {ex.Message}");
             }
 
+            serialPort = Device.CreateSerialMessagePort(
+                Device.PlatformOS.GetSerialPortName("COM1"),
+                suffixDelimiter: Encoding.UTF8.GetBytes("\n"),
+                preserveDelimiter: true);
+
+            serialPort.MessageReceived += SerialPort_MessageReceived;
+            serialPort.BaudRate = 115200;
+            serialPort.Open();
+
             return base.Initialize();
+        }
+
+        void SerialPort_MessageReceived(object sender, SerialMessageData e)
+        {
+
         }
 
         public override Task Run()
