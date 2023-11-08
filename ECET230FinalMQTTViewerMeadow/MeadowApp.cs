@@ -1,10 +1,26 @@
-﻿using Meadow;
-using Meadow.Devices;
-using Meadow.Foundation;
-using Meadow.Foundation.Leds;
-using Meadow.Peripherals.Leds;
+﻿//System
 using System;
 using System.Threading.Tasks;
+using System.Text;
+
+using Meadow;
+using Meadow.Devices;
+using Meadow.Foundation;
+using Meadow.Foundation.Displays;
+using Meadow.Foundation.Graphics;
+using Meadow.Foundation.Leds;
+using Meadow.Peripherals.Displays;
+using Meadow.Peripherals.Leds;
+
+
+//MQTTnet
+using MQTTnet.Client;
+using MQTTnet.Client.Options;
+using MQTTnet;
+using MQTTnet.Client.Subscribing;
+using MQTTnet.Client.Connecting;
+using MQTTnet.Client.Disconnecting;
+using Meadow.Hardware;
 
 namespace ECET230FinalMQTTViewerMeadow
 {
@@ -12,6 +28,9 @@ namespace ECET230FinalMQTTViewerMeadow
     public class MeadowApp : App<F7FeatherV2>
     {
         RgbPwmLed onboardLed;
+
+        MicroGraphics graphics;
+        Ili9341 display;
 
         public override Task Initialize()
         {
@@ -23,6 +42,42 @@ namespace ECET230FinalMQTTViewerMeadow
                 bluePwmPin: Device.Pins.OnboardLedBlue,
                 CommonType.CommonAnode);
 
+            Resolver.Log.Info("Create display driver instance");
+
+            display = new Ili9341
+            (
+                spiBus: Device.CreateSpiBus(),
+                chipSelectPin: Device.Pins.D13,
+                dcPin: Device.Pins.D14,
+                resetPin: Device.Pins.D15,
+                width: 240, height: 320
+            );
+
+            graphics = new MicroGraphics(display)
+            {
+                IgnoreOutOfBoundsPixels = true,
+                CurrentFont = new Font12x16()
+            };
+
+            Resolver.Log.Info("Connecting to Wifi");
+
+            try
+            {
+                var wifi = Device.NetworkAdapters.Primary<IWiFiNetworkAdapter>();
+                wifi.Connect("IoT-Security", "B@kery204!", TimeSpan.FromSeconds(45));
+                wifi.NetworkConnected += (networkAdapter, networkConnectionEventArgs) =>
+                {
+                    Console.WriteLine("Connected to Wifi with:");
+                    Console.WriteLine($"IP Address: {networkAdapter.IpAddress}.");
+                    Console.WriteLine($"Subnet mask: {networkAdapter.SubnetMask}");
+                    Console.WriteLine($"Gateway: {networkAdapter.Gateway}");
+                };
+            }
+            catch (Exception ex)
+            {
+                Resolver.Log.Error($"Failed to Connect to Wifi: : {ex.Message}");
+            }
+
             return base.Initialize();
         }
 
@@ -30,34 +85,19 @@ namespace ECET230FinalMQTTViewerMeadow
         {
             Resolver.Log.Info("Run...");
 
-            return CycleColors(TimeSpan.FromMilliseconds(1000));
-        }
+            graphics.Clear();
 
-        async Task CycleColors(TimeSpan duration)
-        {
-            Resolver.Log.Info("Cycle colors...");
+            graphics.Rotation = RotationType._270Degrees;
 
-            while (true)
-            {
-                await ShowColorPulse(Color.Blue, duration);
-                await ShowColorPulse(Color.Cyan, duration);
-                await ShowColorPulse(Color.Green, duration);
-                await ShowColorPulse(Color.GreenYellow, duration);
-                await ShowColorPulse(Color.Yellow, duration);
-                await ShowColorPulse(Color.Orange, duration);
-                await ShowColorPulse(Color.OrangeRed, duration);
-                await ShowColorPulse(Color.Red, duration);
-                await ShowColorPulse(Color.MediumVioletRed, duration);
-                await ShowColorPulse(Color.Purple, duration);
-                await ShowColorPulse(Color.Magenta, duration);
-                await ShowColorPulse(Color.Pink, duration);
-            }
-        }
+            graphics.DrawTriangle(10, 30, 50, 50, 10, 50, Color.Red);
+            graphics.DrawRectangle(20, 45, 40, 20, Color.Yellow, false);
+            graphics.DrawCircle(50, 50, 40, Color.Blue, false);
+            graphics.DrawText(5, 5, "Meadow F7", Color.White);
 
-        async Task ShowColorPulse(Color color, TimeSpan duration)
-        {
-            await onboardLed.StartPulse(color, duration / 2);
-            await Task.Delay(duration);
+            graphics.Show();
+
+            return base.Run();
         }
+       
     }
 }
