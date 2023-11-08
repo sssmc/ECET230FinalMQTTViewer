@@ -23,6 +23,10 @@ using MQTTnet.Client.Disconnecting;
 using Meadow.Hardware;
 using System.IO.Ports;
 
+//Internal Libs
+using MQTTScreen;
+using MQTTServerConnection;
+
 namespace ECET230FinalMQTTViewerMeadow
 {
     // Change F7FeatherV2 to F7FeatherV1 for V1.x boards

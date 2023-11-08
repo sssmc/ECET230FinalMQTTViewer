@@ -1,11 +1,13 @@
-﻿using MQTTServerConnection;
+﻿using System;
+using System.Collections.Generic;
+using MQTTServerConnection;
 
 namespace MQTTScreen
 {
     public class Screen
     {
-        
-        public Connection Connection { get; set;}
+
+        public Connection Connection { get; set; }
 
         public List<Indicator> Indicators { get; set; }
 
@@ -60,3 +62,4 @@ namespace MQTTScreen
     }
 
 }
+
