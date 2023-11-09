@@ -39,6 +39,16 @@ namespace ECET230FinalMQTTViewerMeadow
 
         ISerialMessagePort serialPort;
 
+        MqttFactory mqttFactory;
+        IMqttClient client;
+        MqttClientOptions mqttClientOptions;
+
+        /*-------Testing Data-------*/
+        Connection testConnection;
+
+        Screen testScreen;
+        /*--------------------------*/
+
         public override Task Initialize()
         {
             Resolver.Log.Info("Initialize...");
@@ -71,14 +81,8 @@ namespace ECET230FinalMQTTViewerMeadow
             try
             {
                 var wifi = Device.NetworkAdapters.Primary<IWiFiNetworkAdapter>();
-                wifi.Connect("IoT-Security", "B@kery204!", TimeSpan.FromSeconds(45));
-                wifi.NetworkConnected += (networkAdapter, networkConnectionEventArgs) =>
-                {
-                    Console.WriteLine("Connected to Wifi with:");
-                    Console.WriteLine($"IP Address: {networkAdapter.IpAddress}.");
-                    Console.WriteLine($"Subnet mask: {networkAdapter.SubnetMask}");
-                    Console.WriteLine($"Gateway: {networkAdapter.Gateway}");
-                };
+                wifi.Connect("White Rabbit", "2511560A7196", TimeSpan.FromSeconds(45));
+                wifi.NetworkConnected += Wifi_NetworkConnected;
             }
             catch (Exception ex)
             {
@@ -92,9 +96,74 @@ namespace ECET230FinalMQTTViewerMeadow
 
             serialPort.MessageReceived += SerialPort_MessageReceived;
             serialPort.BaudRate = 115200;
-            serialPort.Open();
+            serialPort.Open();  
+
+            /*-------Testing Data-------*/
+            testConnection = new Connection("ThingSpeak",
+                                            "FDkPCxA2KTkHMgANKik6NgI",
+                                            "mqtt3.thingspeak.com",
+                                            1883,
+                                            "FDkPCxA2KTkHMgANKik6NgI",
+                                            "lRBFHoyhV9ruKuh0sy7s0QXm");
+
+            /*--------------------------*/
 
             return base.Initialize();
+        }
+
+        private void Wifi_NetworkConnected(INetworkAdapter networkAdapter, NetworkConnectionEventArgs args)
+        {
+          
+            Console.WriteLine("Connected to Wifi with:");
+            Console.WriteLine($"IP Address: {networkAdapter.IpAddress}.");
+            Console.WriteLine($"Subnet mask: {networkAdapter.SubnetMask}");
+            Console.WriteLine($"Gateway: {networkAdapter.Gateway}");
+
+            Console.WriteLine("Connecting to MQTT server...");
+            mqttFactory = new MqttFactory();
+            client = mqttFactory.CreateMqttClient();
+            mqttClientOptions = (MqttClientOptions)new MqttClientOptionsBuilder()
+                                    .WithClientId(Guid.NewGuid().ToString())
+                                    .WithTcpServer("mqtt3.thingspeak.com", 1883)
+                                    .WithClientId("FDkPCxA2KTkHMgANKik6NgI")
+                                    .WithCredentials("FDkPCxA2KTkHMgANKik6NgI", "lRBFHoyhV9ruKuh0sy7s0QXm")
+                                    .WithCleanSession()
+                                    .Build();
+
+            client.UseConnectedHandler(Client_ConnectedAsync);
+            client.UseDisconnectedHandler(Client_DisconnectedAsync);
+            client.ConnectAsync(mqttClientOptions);
+        }
+
+        private async Task Client_ConnectedAsync(MqttClientConnectedEventArgs e)
+        {
+            Console.WriteLine("Connected to MQTT server");
+            var topicFilter = new MqttTopicFilterBuilder()
+                                .WithTopic("channels/2328115/subscribe/fields/+")
+                                .Build();
+            await client.SubscribeAsync(topicFilter);
+            client.UseApplicationMessageReceivedHandler(Client_ApplicationMessageReceivedHandler);
+        }
+
+        private async Task Client_DisconnectedAsync(MqttClientDisconnectedEventArgs e)
+        {
+            Console.WriteLine("Disconnected from MQTT server");
+            await Task.Delay(TimeSpan.FromSeconds(5));
+            try
+            {
+                await client.ConnectAsync(mqttClientOptions);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Reconnect failed {ex.Message}");
+            }
+        }
+
+        private Task Client_ApplicationMessageReceivedHandler(MqttApplicationMessageReceivedEventArgs e)
+        {
+            Console.WriteLine($"Message received on topic {e.ApplicationMessage.Topic}");
+            Console.WriteLine($"Message: {Encoding.UTF8.GetString(e.ApplicationMessage.Payload)}");
+            return Task.CompletedTask;
         }
 
         void SerialPort_MessageReceived(object sender, SerialMessageData e)
