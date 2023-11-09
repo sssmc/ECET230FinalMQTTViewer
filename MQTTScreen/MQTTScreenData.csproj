@@ -6,6 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MQTTConnection\MQTTServerConnection.csproj" />
+    <ProjectReference Include="..\MQTTConnection\MQTTConnectionData.csproj" />
   </ItemGroup>
 </Project>

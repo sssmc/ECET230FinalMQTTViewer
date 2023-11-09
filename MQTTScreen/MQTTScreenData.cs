@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using MQTTServerConnection;
+using MQTTSConnectionData;
 
-namespace MQTTScreen
+namespace MQTTScreenData
 {
-    public class Screen
+    public class ScreenData
     {
 
         public Connection Connection { get; set; }
@@ -13,14 +13,14 @@ namespace MQTTScreen
 
         public string Name { get; set; }
 
-        public Screen(string name, Connection connection)
+        public ScreenData(string name, Connection connection)
         {
             Name = name;
             Connection = connection;
             Indicators = new List<Indicator>();
         }
 
-        public Screen(string name, Connection connection, List<Indicator> indicators)
+        public ScreenData(string name, Connection connection, List<Indicator> indicators)
         {
             Name = name;
             Connection = connection;

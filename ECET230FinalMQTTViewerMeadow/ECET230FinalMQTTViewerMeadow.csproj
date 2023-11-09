@@ -24,7 +24,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MQTTScreen\MQTTScreen.csproj" />
-    <ProjectReference Include="..\MQTTConnection\MQTTServerConnection.csproj" />
+    <ProjectReference Include="..\MQTTScreen\MQTTScreenData.csproj" />
+    <ProjectReference Include="..\MQTTConnection\MQTTConnectionData.csproj" />
   </ItemGroup>
 </Project>

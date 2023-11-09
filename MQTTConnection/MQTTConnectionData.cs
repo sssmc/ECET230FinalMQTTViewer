@@ -1,6 +1,6 @@
-﻿namespace MQTTServerConnection
+﻿namespace MQTTSConnectionData
 {
-    public class Connection
+    public class ConnectionData
     {
         public string Name { get; set; }
 
@@ -14,7 +14,7 @@
 
         public string Password { get; set; }
 
-        public Connection(string name, string clientId, string host, int port, string username, string password)
+        public ConnectionData(string name, string clientId, string host, int port, string username, string password)
         {
             Name = name;
             ClientId = clientId;

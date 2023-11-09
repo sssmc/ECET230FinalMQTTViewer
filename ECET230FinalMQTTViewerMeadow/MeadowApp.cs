@@ -24,8 +24,8 @@ using Meadow.Hardware;
 using System.IO.Ports;
 
 //Internal Libs
-using MQTTScreen;
-using MQTTServerConnection;
+using MQTTScreenData;
+using MQTTSConnectionData;
 
 namespace ECET230FinalMQTTViewerMeadow
 {
@@ -44,9 +44,9 @@ namespace ECET230FinalMQTTViewerMeadow
         MqttClientOptions mqttClientOptions;
 
         /*-------Testing Data-------*/
-        Connection testConnection;
+        ConnectionData testConnection;
 
-        Screen testScreen;
+        ScreenData testScreen;
         /*--------------------------*/
 
         public override Task Initialize()
@@ -99,12 +99,12 @@ namespace ECET230FinalMQTTViewerMeadow
             serialPort.Open();  
 
             /*-------Testing Data-------*/
-            testConnection = new Connection("ThingSpeak",
-                                            "FDkPCxA2KTkHMgANKik6NgI",
-                                            "mqtt3.thingspeak.com",
-                                            1883,
-                                            "FDkPCxA2KTkHMgANKik6NgI",
-                                            "lRBFHoyhV9ruKuh0sy7s0QXm");
+            testConnection = new ConnectionData("ThingSpeak",
+                                                "FDkPCxA2KTkHMgANKik6NgI",
+                                                "mqtt3.thingspeak.com",
+                                                1883,
+                                                "FDkPCxA2KTkHMgANKik6NgI",
+                                                "lRBFHoyhV9ruKuh0sy7s0QXm");
 
             /*--------------------------*/
 
