@@ -45,6 +45,10 @@ namespace ECET230FinalMQTTViewerMeadow
         ConnectionData testConnection;
 
         ScreenData testScreen;
+
+        string temp = "";
+
+        string hum = "";
         /*--------------------------*/
 
         public override Task Initialize()
@@ -73,6 +77,8 @@ namespace ECET230FinalMQTTViewerMeadow
                 IgnoreOutOfBoundsPixels = true,
                 CurrentFont = new Font12x16()
             };
+
+            graphics.Rotation = RotationType._90Degrees;
 
             Resolver.Log.Info("Connecting to Wifi");
 
@@ -105,6 +111,8 @@ namespace ECET230FinalMQTTViewerMeadow
                                                 "lRBFHoyhV9ruKuh0sy7s0QXm");
 
             /*--------------------------*/
+
+            Draw_Screen();
 
             return base.Initialize();
         }
@@ -168,12 +176,35 @@ namespace ECET230FinalMQTTViewerMeadow
         {
             Console.WriteLine($"Message received on topic {e.ApplicationMessage.Topic}");
             Console.WriteLine($"Message: {Encoding.UTF8.GetString(e.ApplicationMessage.Payload)}");
+
+            if(e.ApplicationMessage.Topic == "channels/2328115/subscribe/fields/field1")
+            {
+                temp = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
+            }
+            else if (e.ApplicationMessage.Topic == "channels/2328115/subscribe/fields/field2")
+            {
+                hum = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
+            }
+
+            Draw_Screen();
+
             return Task.CompletedTask;
+        }
+
+        private void Draw_Screen()
+        {
+            graphics.Clear();
+
+            graphics.DrawText(5, 5, "Temperature: " + temp, Color.White);
+
+            graphics.DrawText(5, 30, "Humidity: " + hum, Color.White);
+
+            graphics.Show();
         }
 
         void SerialPort_MessageReceived(object sender, SerialMessageData e)
         {
-
+            
         }
 
 
@@ -181,17 +212,6 @@ namespace ECET230FinalMQTTViewerMeadow
         public override Task Run()
         {
             Resolver.Log.Info("Run...");
-
-            graphics.Clear();
-
-            graphics.Rotation = RotationType._270Degrees;
-
-            graphics.DrawTriangle(10, 30, 50, 50, 10, 50, Color.Red);
-            graphics.DrawRectangle(20, 45, 40, 20, Color.Yellow, false);
-            graphics.DrawCircle(50, 50, 40, Color.Blue, false);
-            graphics.DrawText(5, 5, "Meadow F7", Color.White);
-
-            graphics.Show();
 
             return base.Run();
         }
