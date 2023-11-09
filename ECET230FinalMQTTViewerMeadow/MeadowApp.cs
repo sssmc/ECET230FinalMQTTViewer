@@ -215,35 +215,7 @@ namespace ECET230FinalMQTTViewerMeadow
            
             screen.updateIndicatorValue(e.ApplicationMessage.Topic, Encoding.UTF8.GetString(e.ApplicationMessage.Payload));
 
-            Draw_Screen();
-
             return Task.CompletedTask;
-        }
-
-        private void Draw_Screen()
-        {
-            graphics.Clear();
-
-            /*
-            graphics.DrawText(5, 5, "Temperature: " + temp, Color.White);
-
-            graphics.DrawText(5, 30, "Humidity: " + hum, Color.White);
-
-            graphics.DrawText(5, 55, "Random1: " + random1, Color.White);
-
-            graphics.DrawText(5, 80, "Random2: " + random2, Color.White);
-            */
-
-            
-            for (int i = 0; i < screen.screenData.Indicators[screen.currentScreen].Length; i++)
-            {
-
-                graphics.DrawText(5, i * 30, $"Name: {screen.screenData.Indicators[screen.currentScreen][0]}");
-
-            }
-            
-
-            graphics.Show();
         }
 
         void SerialPort_MessageReceived(object sender, SerialMessageData e)

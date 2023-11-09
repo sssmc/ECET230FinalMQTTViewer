@@ -22,7 +22,7 @@ namespace ECET230FinalMQTTViewerMeadow
         {
             this.screenData = screenData;
             this.graphics = graphics;
-            this.currentScreen = 0;
+            this.currentScreen = 1;
             this.indicatorValues = new string[10][];
             for(int i = 0; i <10; i++)
             {
@@ -53,7 +53,7 @@ namespace ECET230FinalMQTTViewerMeadow
         {
             for(int i = 0; i < screenData.Indicators[currentScreen].Length; i++)
             {
-                for(int j = 0; j< screenData.Indicators[j].GetLength(0); j++)
+                for(int j = 0; j< screenData.Indicators.GetLength(0); j++)
                 {
                     if (screenData.Indicators[j][i].Topic == topic)
                     {
