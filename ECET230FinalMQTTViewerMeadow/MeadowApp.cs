@@ -49,6 +49,10 @@ namespace ECET230FinalMQTTViewerMeadow
         string temp = "";
 
         string hum = "";
+
+        string random1 = "";
+
+        string random2 = "";
         /*--------------------------*/
 
         public override Task Initialize()
@@ -85,7 +89,7 @@ namespace ECET230FinalMQTTViewerMeadow
             try
             {
                 var wifi = Device.NetworkAdapters.Primary<IWiFiNetworkAdapter>();
-                wifi.Connect("White Rabbit", "2511560A7196", TimeSpan.FromSeconds(45));
+                wifi.Connect("IoT-Security", "B@kery204!", TimeSpan.FromSeconds(45));
                 wifi.NetworkConnected += Wifi_NetworkConnected;
             }
             catch (Exception ex)
@@ -110,6 +114,19 @@ namespace ECET230FinalMQTTViewerMeadow
                                                 "FDkPCxA2KTkHMgANKik6NgI",
                                                 "lRBFHoyhV9ruKuh0sy7s0QXm");
 
+            IndicatorData tempIndicator = new IndicatorData("Temperature", "Temperature", "channels/2328115/subscribe/fields/field1", "numeric", 100, 0);
+            IndicatorData humIndicator = new IndicatorData("Humidity", "Humidity", "channels/2328115/subscribe/fields/field2", "numeric", 100, 0);
+
+            IndicatorData random1Indicator = new IndicatorData("Random1", "Random1", "channels/2328115/subscribe/fields/field3", "numeric", 10, 0);
+            IndicatorData random2Indicator = new IndicatorData("Random2", "Random2", "channels/2328115/subscribe/fields/field4", "numeric", 10, 0);
+
+            IndicatorData[][] indicators = new IndicatorData[2][];
+
+            indicators[0] = new IndicatorData[] { tempIndicator, humIndicator };
+            indicators[1] = new IndicatorData[] { random1Indicator, random2Indicator };
+
+            testScreen = new ScreenData(testConnection, indicators);
+
             /*--------------------------*/
 
             Draw_Screen();
@@ -125,7 +142,7 @@ namespace ECET230FinalMQTTViewerMeadow
             Console.WriteLine($"Subnet mask: {networkAdapter.SubnetMask}");
             Console.WriteLine($"Gateway: {networkAdapter.Gateway}");
 
-            await MQTT_Connect(testConnection);
+            await MQTT_Connect(testScreen.Connection);
         }
 
         private async Task MQTT_Connect(ConnectionData connection)
@@ -135,9 +152,9 @@ namespace ECET230FinalMQTTViewerMeadow
             MqttFactory mqttFactory = new MqttFactory();
             MqttClientOptions mqttClientOptions = (MqttClientOptions)new MqttClientOptionsBuilder()
                                     .WithClientId(Guid.NewGuid().ToString())
-                                    .WithTcpServer("mqtt3.thingspeak.com", 1883)
-                                    .WithClientId("FDkPCxA2KTkHMgANKik6NgI")
-                                    .WithCredentials("FDkPCxA2KTkHMgANKik6NgI", "lRBFHoyhV9ruKuh0sy7s0QXm")
+                                    .WithTcpServer(connection.Host, connection.Port)
+                                    .WithClientId(connection.ClientId)
+                                    .WithCredentials(connection.Username, connection.Password)
                                     .WithCleanSession()
                                     .Build();
 
@@ -184,6 +201,12 @@ namespace ECET230FinalMQTTViewerMeadow
             else if (e.ApplicationMessage.Topic == "channels/2328115/subscribe/fields/field2")
             {
                 hum = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
+            }else if(e.ApplicationMessage.Topic == "channels/2328115/subscribe/fields/field3")
+            {
+                random1 = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
+            }else if(e.ApplicationMessage.Topic == "channels/2328115/subscribe/fields/field4")
+            {
+                random2 = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
             }
 
             Draw_Screen();
@@ -198,6 +221,11 @@ namespace ECET230FinalMQTTViewerMeadow
             graphics.DrawText(5, 5, "Temperature: " + temp, Color.White);
 
             graphics.DrawText(5, 30, "Humidity: " + hum, Color.White);
+
+            graphics.DrawText(5, 55, "Random1: " + random1, Color.White);
+
+            graphics.DrawText(5, 80, "Random2: " + random2, Color.White);
+
 
             graphics.Show();
         }
