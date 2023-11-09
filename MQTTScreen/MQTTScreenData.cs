@@ -7,20 +7,20 @@ namespace MQTTScreenData
     public class ScreenData
     {
 
-        public Connection Connection { get; set; }
+        public ConnectionData Connection { get; set; }
 
         public List<Indicator> Indicators { get; set; }
 
         public string Name { get; set; }
 
-        public ScreenData(string name, Connection connection)
+        public ScreenData(string name, ConnectionData connection)
         {
             Name = name;
             Connection = connection;
             Indicators = new List<Indicator>();
         }
 
-        public ScreenData(string name, Connection connection, List<Indicator> indicators)
+        public ScreenData(string name, ConnectionData connection, List<Indicator> indicators)
         {
             Name = name;
             Connection = connection;

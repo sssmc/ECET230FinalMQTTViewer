@@ -39,9 +39,7 @@ namespace ECET230FinalMQTTViewerMeadow
 
         ISerialMessagePort serialPort;
 
-        MqttFactory mqttFactory;
         IMqttClient client;
-        MqttClientOptions mqttClientOptions;
 
         /*-------Testing Data-------*/
         ConnectionData testConnection;
@@ -111,7 +109,7 @@ namespace ECET230FinalMQTTViewerMeadow
             return base.Initialize();
         }
 
-        private void Wifi_NetworkConnected(INetworkAdapter networkAdapter, NetworkConnectionEventArgs args)
+        private async void Wifi_NetworkConnected(INetworkAdapter networkAdapter, NetworkConnectionEventArgs args)
         {
           
             Console.WriteLine("Connected to Wifi with:");
@@ -119,10 +117,15 @@ namespace ECET230FinalMQTTViewerMeadow
             Console.WriteLine($"Subnet mask: {networkAdapter.SubnetMask}");
             Console.WriteLine($"Gateway: {networkAdapter.Gateway}");
 
+            await MQTT_Connect(testConnection);
+        }
+
+        private async Task MQTT_Connect(ConnectionData connection)
+        {
             Console.WriteLine("Connecting to MQTT server...");
-            mqttFactory = new MqttFactory();
-            client = mqttFactory.CreateMqttClient();
-            mqttClientOptions = (MqttClientOptions)new MqttClientOptionsBuilder()
+
+            MqttFactory mqttFactory = new MqttFactory();
+            MqttClientOptions mqttClientOptions = (MqttClientOptions)new MqttClientOptionsBuilder()
                                     .WithClientId(Guid.NewGuid().ToString())
                                     .WithTcpServer("mqtt3.thingspeak.com", 1883)
                                     .WithClientId("FDkPCxA2KTkHMgANKik6NgI")
@@ -130,9 +133,11 @@ namespace ECET230FinalMQTTViewerMeadow
                                     .WithCleanSession()
                                     .Build();
 
+            client = mqttFactory.CreateMqttClient();
+            
             client.UseConnectedHandler(Client_ConnectedAsync);
             client.UseDisconnectedHandler(Client_DisconnectedAsync);
-            client.ConnectAsync(mqttClientOptions);
+            await client.ConnectAsync(mqttClientOptions);
         }
 
         private async Task Client_ConnectedAsync(MqttClientConnectedEventArgs e)
@@ -151,7 +156,7 @@ namespace ECET230FinalMQTTViewerMeadow
             await Task.Delay(TimeSpan.FromSeconds(5));
             try
             {
-                await client.ConnectAsync(mqttClientOptions);
+                await MQTT_Connect(testConnection);
             }
             catch (Exception ex)
             {
@@ -170,6 +175,8 @@ namespace ECET230FinalMQTTViewerMeadow
         {
 
         }
+
+
 
         public override Task Run()
         {
