@@ -55,6 +55,8 @@ namespace ECET230FinalMQTTViewerMeadow
         string random2 = "";
         /*--------------------------*/
 
+        Screen screen;
+
         public override Task Initialize()
         {
             Resolver.Log.Info("Initialize...");
@@ -129,7 +131,9 @@ namespace ECET230FinalMQTTViewerMeadow
 
             /*--------------------------*/
 
-            Draw_Screen();
+            screen = new Screen(testScreen, graphics);
+
+            //Draw_Screen();
 
             return base.Initialize();
         }
@@ -208,6 +212,8 @@ namespace ECET230FinalMQTTViewerMeadow
             {
                 random2 = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
             }
+           
+            screen.updateIndicatorValue(e.ApplicationMessage.Topic, Encoding.UTF8.GetString(e.ApplicationMessage.Payload));
 
             Draw_Screen();
 
@@ -218,6 +224,7 @@ namespace ECET230FinalMQTTViewerMeadow
         {
             graphics.Clear();
 
+            /*
             graphics.DrawText(5, 5, "Temperature: " + temp, Color.White);
 
             graphics.DrawText(5, 30, "Humidity: " + hum, Color.White);
@@ -225,7 +232,16 @@ namespace ECET230FinalMQTTViewerMeadow
             graphics.DrawText(5, 55, "Random1: " + random1, Color.White);
 
             graphics.DrawText(5, 80, "Random2: " + random2, Color.White);
+            */
 
+            
+            for (int i = 0; i < screen.screenData.Indicators[screen.currentScreen].Length; i++)
+            {
+
+                graphics.DrawText(5, i * 30, $"Name: {screen.screenData.Indicators[screen.currentScreen][0]}");
+
+            }
+            
 
             graphics.Show();
         }
