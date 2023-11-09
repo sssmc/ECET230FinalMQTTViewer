@@ -134,10 +134,9 @@ namespace ECET230FinalMQTTViewerMeadow
 
             MqttFactory mqttFactory = new MqttFactory();
             MqttClientOptions mqttClientOptions = (MqttClientOptions)new MqttClientOptionsBuilder()
-                                    .WithClientId(Guid.NewGuid().ToString())
-                                    .WithTcpServer("mqtt3.thingspeak.com", 1883)
-                                    .WithClientId("FDkPCxA2KTkHMgANKik6NgI")
-                                    .WithCredentials("FDkPCxA2KTkHMgANKik6NgI", "lRBFHoyhV9ruKuh0sy7s0QXm")
+                                    .WithTcpServer(connection.Host, connection.Port)
+                                    .WithClientId(connection.ClientId)
+                                    .WithCredentials(connection.Username, connection.Password)
                                     .WithCleanSession()
                                     .Build();
 
