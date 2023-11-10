@@ -88,7 +88,9 @@ namespace ECET230FinalMQTTViewerMeadow
                                                 "mqtt3.thingspeak.com",
                                                 1883,
                                                 "FDkPCxA2KTkHMgANKik6NgI",
-                                                "lRBFHoyhV9ruKuh0sy7s0QXm");
+                                                "lRBFHoyhV9ruKuh0sy7s0QXm",
+                                                "White Rabbit", 
+                                                "2511560A7196");
 
             IndicatorData tempIndicator = new IndicatorData("Temperature", "Temperature", "channels/2328115/subscribe/fields/field1", "numeric", 100, 0);
             IndicatorData humIndicator = new IndicatorData("Humidity", "Humidity", "channels/2328115/subscribe/fields/field2", "numeric", 100, 0);
@@ -111,7 +113,7 @@ namespace ECET230FinalMQTTViewerMeadow
             string filePath = MeadowOS.FileSystem.DataDirectory;
 
             //Name of data file
-            string fileName = "testScreen2.json";
+            string fileName = "testScreen4.json";
 
             //Check if already file exists
             if (File.Exists(filePath + "/" + fileName))
@@ -177,12 +179,12 @@ namespace ECET230FinalMQTTViewerMeadow
             screen.drawScreen();
 
             //Connect to Wifi
-            Resolver.Log.Info("Connecting to Wifi");
+            Resolver.Log.Info($"Connecting to Wifi SSID: {screen.screenData.Connection.WifiSSID}");
 
             try
             {
                 var wifi = Device.NetworkAdapters.Primary<IWiFiNetworkAdapter>();
-                wifi.Connect("White Rabbit", "2511560A7196", TimeSpan.FromSeconds(45));
+                wifi.Connect(screen.screenData.Connection.WifiSSID, screen.screenData.Connection.WifiPassword, TimeSpan.FromSeconds(45));
                 wifi.NetworkConnected += Wifi_NetworkConnected;
             }
             catch (Exception ex)
@@ -223,9 +225,9 @@ namespace ECET230FinalMQTTViewerMeadow
             MqttFactory mqttFactory = new MqttFactory();
             MqttClientOptions mqttClientOptions = (MqttClientOptions)new MqttClientOptionsBuilder()
                                     .WithClientId(Guid.NewGuid().ToString())
-                                    .WithTcpServer(connection.Host, connection.Port)
-                                    .WithClientId(connection.ClientId)
-                                    .WithCredentials(connection.Username, connection.Password)
+                                    .WithTcpServer(connection.MQTTHost, connection.MQTTPort)
+                                    .WithClientId(connection.MQTTClientId)
+                                    .WithCredentials(connection.MQTTUsername, connection.MQTTPassword)
                                     .WithCleanSession()
                                     .Build();
 

@@ -4,26 +4,31 @@
     {
         public string Name { get; set; }
 
-        public string ClientId { get; set; }
+        public string MQTTClientId { get; set; }
 
-        public string Host { get; set; }
+        public string MQTTHost { get; set; }
 
-        public int Port { get; set; }
+        public int MQTTPort { get; set; }
 
-        public string Username { get; set; }
+        public string MQTTUsername { get; set; }
 
-        public string Password { get; set; }
+        public string MQTTPassword { get; set; }
 
-        public ConnectionData(string name, string clientId, string host, int port, string username, string password)
+        public string WifiSSID { get; set; }
+
+        public string WifiPassword { get; set; }
+
+        public ConnectionData(string name, string mqttClientId, string mqttHost, int mqttPort, string mqttUsername, string mqttPassword, string wifiSSID, string wifiPassword)
         {
             Name = name;
-            ClientId = clientId;
-            Host = host;
-            Port = port;
-            Username = username;
-            Password = password;
+            MQTTClientId = mqttClientId;
+            MQTTHost = mqttHost;
+            MQTTPort = mqttPort;
+            MQTTUsername = mqttUsername;
+            MQTTPassword = mqttPassword;
+            WifiSSID = wifiSSID;
+            WifiPassword = wifiPassword;
         }
-
         public string getThinkspeakTopicString(string channelNumber, string field)
         {
             return $"channels/{channelNumber}/subscribe/fields/{field}";
