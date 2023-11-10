@@ -36,29 +36,18 @@ namespace ECET230FinalMQTTViewerMeadow
     {
         RgbPwmLed onboardLed;
 
+        //TFT Display
         MicroGraphics graphics;
         Ili9341 display;
 
+        //Serial Port
         ISerialMessagePort serialPort;
 
+        //MQTT client
         IMqttClient client;
 
-        /*-------Testing Data-------*/
-        ConnectionData testConnection;
-
+        //Screen Data
         ScreenData screenData;
-
-        ScreenData defaultScreen;
-
-        string temp = "";
-
-        string hum = "";
-
-        string random1 = "";
-
-        string random2 = "";
-        /*--------------------------*/
-
         Screen screen;
 
         public override Task Initialize()
@@ -71,7 +60,10 @@ namespace ECET230FinalMQTTViewerMeadow
                 bluePwmPin: Device.Pins.OnboardLedBlue,
                 CommonType.CommonAnode);
 
-            Resolver.Log.Info("Create display driver instance");
+            onboardLed.SetColor(Color.Yellow);
+
+            //Connect to TFT Display
+            Resolver.Log.Info("Connecting to TFT...");
 
             display = new Ili9341
             (
@@ -90,30 +82,8 @@ namespace ECET230FinalMQTTViewerMeadow
 
             graphics.Rotation = RotationType._90Degrees;
 
-            Resolver.Log.Info("Connecting to Wifi");
-
-            try
-            {
-                var wifi = Device.NetworkAdapters.Primary<IWiFiNetworkAdapter>();
-                wifi.Connect("White Rabbit", "2511560A7196", TimeSpan.FromSeconds(45));
-                wifi.NetworkConnected += Wifi_NetworkConnected;
-            }
-            catch (Exception ex)
-            {
-                Resolver.Log.Error($"Failed to Connect to Wifi: : {ex.Message}");
-            }
-
-            serialPort = Device.CreateSerialMessagePort(
-                Device.PlatformOS.GetSerialPortName("COM1"),
-                suffixDelimiter: Encoding.UTF8.GetBytes("\n"),
-                preserveDelimiter: true);
-
-            serialPort.MessageReceived += SerialPort_MessageReceived;
-            serialPort.BaudRate = 115200;
-            serialPort.Open();  
-
-            /*-------Testing Data-------*/
-            testConnection = new ConnectionData("ThingSpeak",
+            //Default Screen Data if no file is found
+            ConnectionData testConnection; testConnection = new ConnectionData("ThingSpeak",
                                                 "FDkPCxA2KTkHMgANKik6NgI",
                                                 "mqtt3.thingspeak.com",
                                                 1883,
@@ -131,19 +101,22 @@ namespace ECET230FinalMQTTViewerMeadow
             indicators[0] = new IndicatorData[] { tempIndicator, humIndicator };
             indicators[1] = new IndicatorData[] { random1Indicator, random2Indicator };
 
-            defaultScreen = new ScreenData(testConnection, indicators);
-
-            /*--------------------------*/
+            ScreenData defaultScreenData = new ScreenData(testConnection, indicators);
 
             //File loading
 
+            Console.WriteLine("Loading Data File...");
+
+            //Location of data file
             string filePath = MeadowOS.FileSystem.DataDirectory;
 
+            //Name of data file
             string fileName = "testScreen2.json";
 
+            //Check if already file exists
             if (File.Exists(filePath + "/" + fileName))
             {
-                Console.WriteLine("File Found!");
+                Console.WriteLine("File Found");
 
                 try
                 {
@@ -153,6 +126,8 @@ namespace ECET230FinalMQTTViewerMeadow
                         // Read the stream as a string, and write the string to the console.
                         string file = sr.ReadToEnd();
                         Console.WriteLine(file);
+
+                        //Deserialize JSON from file to the screenData object
                         screenData = new ScreenData();
                         screenData = JsonSerializer.Deserialize<ScreenData>(file);
                         
@@ -162,6 +137,11 @@ namespace ECET230FinalMQTTViewerMeadow
                 {
                     Console.WriteLine("The file could not be read:");
                     Console.WriteLine(e.Message);
+                    Console.WriteLine("Using default data");
+
+                    //Use default data if file fails to load
+                    screenData = new ScreenData();
+                    screenData = defaultScreenData;
                 }
 
             }
@@ -169,24 +149,58 @@ namespace ECET230FinalMQTTViewerMeadow
             {
                 try
                 {
-                    Console.WriteLine("File not found, creating file");
+                    Console.WriteLine("File not found, creating file using default data");
+
+                    //Create file using default data
                     using (var fs = File.CreateText(Path.Combine(filePath, fileName)))
                     {
-                        fs.WriteLine(JsonSerializer.Serialize(defaultScreen));
+                        fs.WriteLine(JsonSerializer.Serialize(defaultScreenData));
+
                         screenData = new ScreenData();
-                        screenData = defaultScreen;
+                        screenData = defaultScreenData;
                     }
 
                 }
                 catch (Exception ex)
                 {
+                    Console.WriteLine("Failed to create file");
                     Console.WriteLine(ex.Message);
+                    Console.WriteLine("Using default data");
+                    screenData = new ScreenData();
+                    screenData = defaultScreenData;
                 }
             }
 
+            //Create Screen object
             screen = new Screen(screenData, graphics);
 
             screen.drawScreen();
+
+            //Connect to Wifi
+            Resolver.Log.Info("Connecting to Wifi");
+
+            try
+            {
+                var wifi = Device.NetworkAdapters.Primary<IWiFiNetworkAdapter>();
+                wifi.Connect("White Rabbit", "2511560A7196", TimeSpan.FromSeconds(45));
+                wifi.NetworkConnected += Wifi_NetworkConnected;
+            }
+            catch (Exception ex)
+            {
+                Resolver.Log.Error($"Failed to Connect to Wifi: : {ex.Message}");
+            }
+
+            //Create Serial Port
+            serialPort = Device.CreateSerialMessagePort(
+                Device.PlatformOS.GetSerialPortName("COM1"),
+                suffixDelimiter: Encoding.UTF8.GetBytes("\n"),
+                preserveDelimiter: true);
+
+            serialPort.MessageReceived += SerialPort_MessageReceived;
+            serialPort.BaudRate = 115200;
+            serialPort.Open();
+
+            onboardLed.SetColor(Color.Green);
 
             return base.Initialize();
         }
@@ -250,21 +264,6 @@ namespace ECET230FinalMQTTViewerMeadow
         {
             Console.WriteLine($"Message received on topic {e.ApplicationMessage.Topic}");
             Console.WriteLine($"Message: {Encoding.UTF8.GetString(e.ApplicationMessage.Payload)}");
-
-            if(e.ApplicationMessage.Topic == "channels/2328115/subscribe/fields/field1")
-            {
-                temp = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
-            }
-            else if (e.ApplicationMessage.Topic == "channels/2328115/subscribe/fields/field2")
-            {
-                hum = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
-            }else if(e.ApplicationMessage.Topic == "channels/2328115/subscribe/fields/field3")
-            {
-                random1 = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
-            }else if(e.ApplicationMessage.Topic == "channels/2328115/subscribe/fields/field4")
-            {
-                random2 = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
-            }
            
             screen.updateIndicatorValue(e.ApplicationMessage.Topic, Encoding.UTF8.GetString(e.ApplicationMessage.Payload));
 
