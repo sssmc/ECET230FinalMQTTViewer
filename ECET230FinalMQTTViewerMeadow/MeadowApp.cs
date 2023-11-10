@@ -2,6 +2,7 @@
 using System;
 using System.Threading.Tasks;
 using System.Text;
+using System.Text.Json;
 
 using Meadow;
 using Meadow.Devices;
@@ -26,6 +27,7 @@ using System.IO.Ports;
 //Internal Libs
 using MQTTScreenData;
 using MQTTSConnectionData;
+using System.IO;
 
 namespace ECET230FinalMQTTViewerMeadow
 {
@@ -44,12 +46,20 @@ namespace ECET230FinalMQTTViewerMeadow
         /*-------Testing Data-------*/
         ConnectionData testConnection;
 
-        ScreenData testScreen;
+        ScreenData screenData;
+
+        ScreenData defaultScreen;
 
         string temp = "";
 
         string hum = "";
+
+        string random1 = "";
+
+        string random2 = "";
         /*--------------------------*/
+
+        Screen screen;
 
         public override Task Initialize()
         {
@@ -110,9 +120,73 @@ namespace ECET230FinalMQTTViewerMeadow
                                                 "FDkPCxA2KTkHMgANKik6NgI",
                                                 "lRBFHoyhV9ruKuh0sy7s0QXm");
 
+            IndicatorData tempIndicator = new IndicatorData("Temperature", "Temperature", "channels/2328115/subscribe/fields/field1", "numeric", 100, 0);
+            IndicatorData humIndicator = new IndicatorData("Humidity", "Humidity", "channels/2328115/subscribe/fields/field2", "numeric", 100, 0);
+
+            IndicatorData random1Indicator = new IndicatorData("Random1", "Random1", "channels/2328115/subscribe/fields/field3", "numeric", 10, 0);
+            IndicatorData random2Indicator = new IndicatorData("Random2", "Random2", "channels/2328115/subscribe/fields/field4", "numeric", 10, 0);
+
+            IndicatorData[][] indicators = new IndicatorData[2][];
+
+            indicators[0] = new IndicatorData[] { tempIndicator, humIndicator };
+            indicators[1] = new IndicatorData[] { random1Indicator, random2Indicator };
+
+            defaultScreen = new ScreenData(testConnection, indicators);
+
             /*--------------------------*/
 
-            Draw_Screen();
+            //File loading
+
+            string filePath = MeadowOS.FileSystem.DataDirectory;
+
+            string fileName = "testScreen2.json";
+
+            if (File.Exists(filePath + "/" + fileName))
+            {
+                Console.WriteLine("File Found!");
+
+                try
+                {
+                    // Open the text file using a stream reader.
+                    using (var sr = new StreamReader(filePath + "/" + fileName))
+                    {
+                        // Read the stream as a string, and write the string to the console.
+                        string file = sr.ReadToEnd();
+                        Console.WriteLine(file);
+                        screenData = new ScreenData();
+                        screenData = JsonSerializer.Deserialize<ScreenData>(file);
+                        
+                    }
+                }
+                catch (IOException e)
+                {
+                    Console.WriteLine("The file could not be read:");
+                    Console.WriteLine(e.Message);
+                }
+
+            }
+            else
+            {
+                try
+                {
+                    Console.WriteLine("File not found, creating file");
+                    using (var fs = File.CreateText(Path.Combine(filePath, fileName)))
+                    {
+                        fs.WriteLine(JsonSerializer.Serialize(defaultScreen));
+                        screenData = new ScreenData();
+                        screenData = defaultScreen;
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+            }
+
+            screen = new Screen(screenData, graphics);
+
+            screen.drawScreen();
 
             return base.Initialize();
         }
@@ -125,7 +199,7 @@ namespace ECET230FinalMQTTViewerMeadow
             Console.WriteLine($"Subnet mask: {networkAdapter.SubnetMask}");
             Console.WriteLine($"Gateway: {networkAdapter.Gateway}");
 
-            await MQTT_Connect(testConnection);
+            await MQTT_Connect(screenData.Connection);
         }
 
         private async Task MQTT_Connect(ConnectionData connection)
@@ -134,6 +208,7 @@ namespace ECET230FinalMQTTViewerMeadow
 
             MqttFactory mqttFactory = new MqttFactory();
             MqttClientOptions mqttClientOptions = (MqttClientOptions)new MqttClientOptionsBuilder()
+                                    .WithClientId(Guid.NewGuid().ToString())
                                     .WithTcpServer(connection.Host, connection.Port)
                                     .WithClientId(connection.ClientId)
                                     .WithCredentials(connection.Username, connection.Password)
@@ -163,7 +238,7 @@ namespace ECET230FinalMQTTViewerMeadow
             await Task.Delay(TimeSpan.FromSeconds(5));
             try
             {
-                await MQTT_Connect(testConnection);
+                await MQTT_Connect(screenData.Connection);
             }
             catch (Exception ex)
             {
@@ -183,22 +258,17 @@ namespace ECET230FinalMQTTViewerMeadow
             else if (e.ApplicationMessage.Topic == "channels/2328115/subscribe/fields/field2")
             {
                 hum = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
+            }else if(e.ApplicationMessage.Topic == "channels/2328115/subscribe/fields/field3")
+            {
+                random1 = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
+            }else if(e.ApplicationMessage.Topic == "channels/2328115/subscribe/fields/field4")
+            {
+                random2 = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
             }
-
-            Draw_Screen();
+           
+            screen.updateIndicatorValue(e.ApplicationMessage.Topic, Encoding.UTF8.GetString(e.ApplicationMessage.Payload));
 
             return Task.CompletedTask;
-        }
-
-        private void Draw_Screen()
-        {
-            graphics.Clear();
-
-            graphics.DrawText(5, 5, "Temperature: " + temp, Color.White);
-
-            graphics.DrawText(5, 30, "Humidity: " + hum, Color.White);
-
-            graphics.Show();
         }
 
         void SerialPort_MessageReceived(object sender, SerialMessageData e)
@@ -206,11 +276,11 @@ namespace ECET230FinalMQTTViewerMeadow
             
         }
 
-
-
         public override Task Run()
         {
             Resolver.Log.Info("Run...");
+
+            
 
             return base.Run();
         }

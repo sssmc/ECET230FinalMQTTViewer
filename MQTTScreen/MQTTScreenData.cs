@@ -9,27 +9,29 @@ namespace MQTTScreenData
 
         public ConnectionData Connection { get; set; }
 
-        public List<Indicator> Indicators { get; set; }
+        public IndicatorData[][] Indicators { get; set; }
 
-        public string Name { get; set; }
+        public ScreenData()
+        {
+
+        }
+
 
         public ScreenData(string name, ConnectionData connection)
         {
-            Name = name;
             Connection = connection;
-            Indicators = new List<Indicator>();
+            Indicators = new IndicatorData[10][];
         }
 
-        public ScreenData(string name, ConnectionData connection, List<Indicator> indicators)
+        public ScreenData(ConnectionData connection, IndicatorData[][] indicators)
         {
-            Name = name;
             Connection = connection;
             Indicators = indicators;
         }
 
     }
 
-    public class Indicator
+    public class IndicatorData
     {
         public string Name { get; set; }
         public string Description { get; set; }
@@ -42,7 +44,7 @@ namespace MQTTScreenData
 
         public int MinValue { get; set; }
 
-        public Indicator(string name, string description, string topic, string type, int maxValue, int minValue)
+        public IndicatorData(string name, string description, string topic, string type, int maxValue, int minValue)
         {
             Name = name;
             Description = description;
