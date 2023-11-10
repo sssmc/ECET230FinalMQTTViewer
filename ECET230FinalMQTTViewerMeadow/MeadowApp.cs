@@ -28,6 +28,7 @@ using System.IO.Ports;
 using MQTTScreenData;
 using MQTTSConnectionData;
 using System.IO;
+using Meadow.Foundation.Sensors.Buttons;
 
 namespace ECET230FinalMQTTViewerMeadow
 {
@@ -50,161 +51,176 @@ namespace ECET230FinalMQTTViewerMeadow
         ScreenData screenData;
         Screen screen;
 
-        public override Task Initialize()
+        PushButton switchPageButton;
+
+    public override Task Initialize()
+    {
+        Resolver.Log.Info("Initialize...");
+
+        onboardLed = new RgbPwmLed(
+            redPwmPin: Device.Pins.OnboardLedRed,
+            greenPwmPin: Device.Pins.OnboardLedGreen,
+            bluePwmPin: Device.Pins.OnboardLedBlue,
+            CommonType.CommonAnode);
+
+        onboardLed.SetColor(Color.Yellow);
+
+        switchPageButton = new PushButton(Device.Pins.D10, ResistorMode.InternalPullUp, TimeSpan.FromMilliseconds(0.02));
+        switchPageButton.Clicked += SwitchPageButton_Clicked;
+
+        //Connect to TFT Display
+        Resolver.Log.Info("Connecting to TFT...");
+
+        display = new Ili9341
+        (
+            spiBus: Device.CreateSpiBus(),
+            chipSelectPin: Device.Pins.D11,
+            dcPin: Device.Pins.D14,
+            resetPin: Device.Pins.D15,
+            width: 240, height: 320
+        );
+
+        graphics = new MicroGraphics(display)
         {
-            Resolver.Log.Info("Initialize...");
+            IgnoreOutOfBoundsPixels = true,
+            CurrentFont = new Font12x16()
+        };
 
-            onboardLed = new RgbPwmLed(
-                redPwmPin: Device.Pins.OnboardLedRed,
-                greenPwmPin: Device.Pins.OnboardLedGreen,
-                bluePwmPin: Device.Pins.OnboardLedBlue,
-                CommonType.CommonAnode);
+        graphics.Rotation = RotationType._90Degrees;
 
-            onboardLed.SetColor(Color.Yellow);
+        //Default Screen Data if no file is found
+        ConnectionData testConnection; testConnection = new ConnectionData("ThingSpeak",
+                                            "FDkPCxA2KTkHMgANKik6NgI",
+                                            "mqtt3.thingspeak.com",
+                                            1883,
+                                            "FDkPCxA2KTkHMgANKik6NgI",
+                                            "lRBFHoyhV9ruKuh0sy7s0QXm",
+                                            "White Rabbit", 
+                                            "2511560A7196");
 
-            //Connect to TFT Display
-            Resolver.Log.Info("Connecting to TFT...");
+        IndicatorData tempIndicator = new IndicatorData("Temperature", "Temperature", "channels/2328115/subscribe/fields/field1", "numeric", 100, 0);
+        IndicatorData humIndicator = new IndicatorData("Humidity", "Humidity", "channels/2328115/subscribe/fields/field2", "numeric", 100, 0);
 
-            display = new Ili9341
-            (
-                spiBus: Device.CreateSpiBus(),
-                chipSelectPin: Device.Pins.D11,
-                dcPin: Device.Pins.D14,
-                resetPin: Device.Pins.D15,
-                width: 240, height: 320
-            );
+        IndicatorData random1Indicator = new IndicatorData("Random1", "Random1", "channels/2328115/subscribe/fields/field3", "numeric", 10, 0);
+        IndicatorData random2Indicator = new IndicatorData("Random2", "Random2", "channels/2328115/subscribe/fields/field4", "numeric", 10, 0);
 
-            graphics = new MicroGraphics(display)
-            {
-                IgnoreOutOfBoundsPixels = true,
-                CurrentFont = new Font12x16()
-            };
+        IndicatorData[][] indicators = new IndicatorData[2][];
 
-            graphics.Rotation = RotationType._90Degrees;
+        indicators[0] = new IndicatorData[] { tempIndicator, humIndicator };
+        indicators[1] = new IndicatorData[] { random1Indicator, random2Indicator };
 
-            //Default Screen Data if no file is found
-            ConnectionData testConnection; testConnection = new ConnectionData("ThingSpeak",
-                                                "FDkPCxA2KTkHMgANKik6NgI",
-                                                "mqtt3.thingspeak.com",
-                                                1883,
-                                                "FDkPCxA2KTkHMgANKik6NgI",
-                                                "lRBFHoyhV9ruKuh0sy7s0QXm",
-                                                "White Rabbit", 
-                                                "2511560A7196");
+        ScreenData defaultScreenData = new ScreenData(testConnection, indicators);
 
-            IndicatorData tempIndicator = new IndicatorData("Temperature", "Temperature", "channels/2328115/subscribe/fields/field1", "numeric", 100, 0);
-            IndicatorData humIndicator = new IndicatorData("Humidity", "Humidity", "channels/2328115/subscribe/fields/field2", "numeric", 100, 0);
+        //File loading
 
-            IndicatorData random1Indicator = new IndicatorData("Random1", "Random1", "channels/2328115/subscribe/fields/field3", "numeric", 10, 0);
-            IndicatorData random2Indicator = new IndicatorData("Random2", "Random2", "channels/2328115/subscribe/fields/field4", "numeric", 10, 0);
+        Console.WriteLine("Loading Data File...");
 
-            IndicatorData[][] indicators = new IndicatorData[2][];
+        //Location of data file
+        string filePath = MeadowOS.FileSystem.DataDirectory;
 
-            indicators[0] = new IndicatorData[] { tempIndicator, humIndicator };
-            indicators[1] = new IndicatorData[] { random1Indicator, random2Indicator };
+        //Name of data file
+        string fileName = "testScreen4.json";
 
-            ScreenData defaultScreenData = new ScreenData(testConnection, indicators);
-
-            //File loading
-
-            Console.WriteLine("Loading Data File...");
-
-            //Location of data file
-            string filePath = MeadowOS.FileSystem.DataDirectory;
-
-            //Name of data file
-            string fileName = "testScreen4.json";
-
-            //Check if already file exists
-            if (File.Exists(filePath + "/" + fileName))
-            {
-                Console.WriteLine("File Found");
-
-                try
-                {
-                    // Open the text file using a stream reader.
-                    using (var sr = new StreamReader(filePath + "/" + fileName))
-                    {
-                        // Read the stream as a string, and write the string to the console.
-                        string file = sr.ReadToEnd();
-                        Console.WriteLine(file);
-
-                        //Deserialize JSON from file to the screenData object
-                        screenData = new ScreenData();
-                        screenData = JsonSerializer.Deserialize<ScreenData>(file);
-                        
-                    }
-                }
-                catch (IOException e)
-                {
-                    Console.WriteLine("The file could not be read:");
-                    Console.WriteLine(e.Message);
-                    Console.WriteLine("Using default data");
-
-                    //Use default data if file fails to load
-                    screenData = new ScreenData();
-                    screenData = defaultScreenData;
-                }
-
-            }
-            else
-            {
-                try
-                {
-                    Console.WriteLine("File not found, creating file using default data");
-
-                    //Create file using default data
-                    using (var fs = File.CreateText(Path.Combine(filePath, fileName)))
-                    {
-                        fs.WriteLine(JsonSerializer.Serialize(defaultScreenData));
-
-                        screenData = new ScreenData();
-                        screenData = defaultScreenData;
-                    }
-
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Failed to create file");
-                    Console.WriteLine(ex.Message);
-                    Console.WriteLine("Using default data");
-                    screenData = new ScreenData();
-                    screenData = defaultScreenData;
-                }
-            }
-
-            //Create Screen object
-            screen = new Screen(screenData, graphics);
-
-            screen.drawScreen();
-
-            //Connect to Wifi
-            Resolver.Log.Info($"Connecting to Wifi SSID: {screen.screenData.Connection.WifiSSID}");
+        //Check if already file exists
+        if (File.Exists(filePath + "/" + fileName))
+        {
+            Console.WriteLine("File Found");
 
             try
             {
-                var wifi = Device.NetworkAdapters.Primary<IWiFiNetworkAdapter>();
-                wifi.Connect(screen.screenData.Connection.WifiSSID, screen.screenData.Connection.WifiPassword, TimeSpan.FromSeconds(45));
-                wifi.NetworkConnected += Wifi_NetworkConnected;
+                // Open the text file using a stream reader.
+                using (var sr = new StreamReader(filePath + "/" + fileName))
+                {
+                    // Read the stream as a string, and write the string to the console.
+                    string file = sr.ReadToEnd();
+                    Console.WriteLine(file);
+
+                    //Deserialize JSON from file to the screenData object
+                    screenData = new ScreenData();
+                    screenData = JsonSerializer.Deserialize<ScreenData>(file);
+                        
+                }
+            }
+            catch (IOException e)
+            {
+                Console.WriteLine("The file could not be read:");
+                Console.WriteLine(e.Message);
+                Console.WriteLine("Using default data");
+
+                //Use default data if file fails to load
+                screenData = new ScreenData();
+                screenData = defaultScreenData;
+            }
+
+        }
+        else
+        {
+            try
+            {
+                Console.WriteLine("File not found, creating file using default data");
+
+                //Create file using default data
+                using (var fs = File.CreateText(Path.Combine(filePath, fileName)))
+                {
+                    fs.WriteLine(JsonSerializer.Serialize(defaultScreenData));
+
+                    screenData = new ScreenData();
+                    screenData = defaultScreenData;
+                }
+
             }
             catch (Exception ex)
             {
-                Resolver.Log.Error($"Failed to Connect to Wifi: : {ex.Message}");
+                Console.WriteLine("Failed to create file");
+                Console.WriteLine(ex.Message);
+                Console.WriteLine("Using default data");
+                screenData = new ScreenData();
+                screenData = defaultScreenData;
             }
+        }
 
-            //Create Serial Port
-            serialPort = Device.CreateSerialMessagePort(
-                Device.PlatformOS.GetSerialPortName("COM1"),
-                suffixDelimiter: Encoding.UTF8.GetBytes("\n"),
-                preserveDelimiter: true);
+        //Create Screen object
+        screen = new Screen(screenData, graphics);
 
-            serialPort.MessageReceived += SerialPort_MessageReceived;
-            serialPort.BaudRate = 115200;
-            serialPort.Open();
+        screen.drawScreen();
 
-            onboardLed.SetColor(Color.Green);
+        //Connect to Wifi
+        Resolver.Log.Info($"Connecting to Wifi SSID: {screen.screenData.Connection.WifiSSID}");
 
-            return base.Initialize();
+        try
+        {
+            var wifi = Device.NetworkAdapters.Primary<IWiFiNetworkAdapter>();
+            wifi.Connect(screen.screenData.Connection.WifiSSID, screen.screenData.Connection.WifiPassword, TimeSpan.FromSeconds(45));
+            wifi.NetworkConnected += Wifi_NetworkConnected;
+        }
+        catch (Exception ex)
+        {
+            Resolver.Log.Error($"Failed to Connect to Wifi: : {ex.Message}");
+        }
+
+        //Create Serial Port
+        serialPort = Device.CreateSerialMessagePort(
+            Device.PlatformOS.GetSerialPortName("COM1"),
+            suffixDelimiter: Encoding.UTF8.GetBytes("\n"),
+            preserveDelimiter: true);
+
+        serialPort.MessageReceived += SerialPort_MessageReceived;
+        serialPort.BaudRate = 115200;
+        serialPort.Open();
+
+        onboardLed.SetColor(Color.Green);
+
+        return base.Initialize();
+        }
+
+        private void SwitchPageButton_Clicked(object sender, EventArgs e)
+        {
+            screen.currentScreen++;
+            if (screen.currentScreen > 1)
+            {
+                screen.currentScreen = 0;
+            }
+            screen.drawScreen();
         }
 
         private async void Wifi_NetworkConnected(INetworkAdapter networkAdapter, NetworkConnectionEventArgs args)
@@ -276,6 +292,8 @@ namespace ECET230FinalMQTTViewerMeadow
         {
             
         }
+
+
 
         public override Task Run()
         {
