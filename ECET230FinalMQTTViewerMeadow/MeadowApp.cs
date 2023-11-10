@@ -2,6 +2,7 @@
 using System;
 using System.Threading.Tasks;
 using System.Text;
+using System.Text.Json;
 
 using Meadow;
 using Meadow.Devices;
@@ -26,6 +27,7 @@ using System.IO.Ports;
 //Internal Libs
 using MQTTScreenData;
 using MQTTSConnectionData;
+using System.IO;
 
 namespace ECET230FinalMQTTViewerMeadow
 {
@@ -91,7 +93,7 @@ namespace ECET230FinalMQTTViewerMeadow
             try
             {
                 var wifi = Device.NetworkAdapters.Primary<IWiFiNetworkAdapter>();
-                wifi.Connect("IoT-Security", "B@kery204!", TimeSpan.FromSeconds(45));
+                wifi.Connect("iPhone 13 mini (3)", "tbkQ-jxyE-i5I5-Ce8M", TimeSpan.FromSeconds(45));
                 wifi.NetworkConnected += Wifi_NetworkConnected;
             }
             catch (Exception ex)
@@ -129,11 +131,60 @@ namespace ECET230FinalMQTTViewerMeadow
 
             testScreen = new ScreenData(testConnection, indicators);
 
+            string jsonString = JsonSerializer.Serialize(testScreen);
+
+            Console.WriteLine(jsonString);
+
             /*--------------------------*/
 
             screen = new Screen(testScreen, graphics);
 
-            //Draw_Screen();
+            screen.drawScreen();
+
+            //File loading
+
+            string filePath = MeadowOS.FileSystem.DataDirectory;
+
+            string fileName = "testScreen1.json";
+
+            if (File.Exists(filePath + "/" + fileName))
+            {
+                Console.WriteLine("File Found!");
+
+                try
+                {
+                    // Open the text file using a stream reader.
+                    using (var sr = new StreamReader(filePath + "/" + fileName))
+                    {
+                        // Read the stream as a string, and write the string to the console.
+                        string file = sr.ReadToEnd();
+                        Console.WriteLine(file);
+                        testScreen = new ScreenData();
+                        testScreen = JsonSerializer.Deserialize<ScreenData>(file);
+                    }
+                }
+                catch (IOException e)
+                {
+                    Console.WriteLine("The file could not be read:");
+                    Console.WriteLine(e.Message);
+                }
+
+            }
+            else
+            {
+                try
+                {
+                    Console.WriteLine("File not found, creating file");
+                    using (var fs = File.CreateText(Path.Combine(filePath, fileName)))
+                    {
+                        fs.WriteLine(jsonString);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+            }
 
             return base.Initialize();
         }
@@ -223,11 +274,11 @@ namespace ECET230FinalMQTTViewerMeadow
             
         }
 
-
-
         public override Task Run()
         {
             Resolver.Log.Info("Run...");
+
+            
 
             return base.Run();
         }
