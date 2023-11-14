@@ -96,8 +96,8 @@ namespace ECET230FinalMQTTViewerMeadow
                                             1883,
                                             "FDkPCxA2KTkHMgANKik6NgI",
                                             "lRBFHoyhV9ruKuh0sy7s0QXm",
-                                            "White Rabbit", 
-                                            "2511560A7196");
+                                            "IoT-Security", 
+                                            "B@kery204!");
 
         IndicatorData tempIndicator = new IndicatorData("Temperature", "Temperature", "channels/2328115/subscribe/fields/field1", "numeric", 100, 0);
         IndicatorData humIndicator = new IndicatorData("Humidity", "Humidity", "channels/2328115/subscribe/fields/field2", "numeric", 100, 0);
@@ -108,7 +108,7 @@ namespace ECET230FinalMQTTViewerMeadow
         IndicatorData[][] indicators = new IndicatorData[2][];
 
         indicators[0] = new IndicatorData[] { tempIndicator, humIndicator };
-        indicators[1] = new IndicatorData[] { random1Indicator, random2Indicator };
+        indicators[1] = new IndicatorData[] { random1Indicator, random2Indicator, tempIndicator, humIndicator };
 
         ScreenData defaultScreenData = new ScreenData(testConnection, indicators);
 
@@ -120,7 +120,7 @@ namespace ECET230FinalMQTTViewerMeadow
         string filePath = MeadowOS.FileSystem.DataDirectory;
 
         //Name of data file
-        string fileName = "testScreen4.json";
+        string fileName = "testScreen6.json";
 
         //Check if already file exists
         if (File.Exists(filePath + "/" + fileName))
@@ -271,6 +271,7 @@ namespace ECET230FinalMQTTViewerMeadow
                         Console.WriteLine($"Subscribing to: {indicator.Topic}");
                         MqttTopicFilter objAdd = new MqttTopicFilter();
                         objAdd.Topic = indicator.Topic;
+                        topicsSubscribed.Add(indicator.Topic);
                         topicFilters.Add(objAdd);
                     }
                     else

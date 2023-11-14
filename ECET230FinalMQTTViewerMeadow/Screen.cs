@@ -51,16 +51,15 @@ namespace ECET230FinalMQTTViewerMeadow
 
         public void updateIndicatorValue(string topic, string value)
         {
-            for(int i = 0; i < screenData.Indicators[currentScreen].Length; i++)
+            for(int i = 0; i < screenData.Indicators.GetLength(0); i++)
             {
-                for(int j = 0; j< screenData.Indicators.GetLength(0); j++)
+                for(int j = 0; j < screenData.Indicators[i].Length; j++)
                 {
-                    if (screenData.Indicators[j][i].Topic == topic)
+                    if (screenData.Indicators[i][j].Topic == topic)
                     {
-                        indicatorValues[j][i] = value;
+                        indicatorValues[i][j] = value;
                     }
                 }
-                
             }
 
             drawScreen();
