@@ -26,6 +26,7 @@ using System.IO.Ports;
 //Internal Libs
 using MQTTScreenData;
 using MQTTSConnectionData;
+using System.Collections.Generic;
 
 namespace ECET230FinalMQTTViewerMeadow
 {
@@ -172,10 +173,30 @@ namespace ECET230FinalMQTTViewerMeadow
         private async Task Client_ConnectedAsync(MqttClientConnectedEventArgs e)
         {
             Console.WriteLine("Connected to MQTT server");
-            var topicFilter = new MqttTopicFilterBuilder()
-                                .WithTopic("channels/2328115/subscribe/fields/+")
-                                .Build();
-            await client.SubscribeAsync(topicFilter);
+
+            List<MqttTopicFilter> topicFilters = new List<MqttTopicFilter>();
+            List<string> topicsSubscribed = new List<string>();
+
+            foreach (IndicatorData[] indicators in screen.screenData.Indicators)
+            {
+                foreach(IndicatorData indicator in indicators)
+                {
+                    if (!topicsSubscribed.Contains(indicator.Topic))
+                    {
+                        Console.WriteLine($"Subscribing to: {indicator.Topic}");
+                        MqttTopicFilter objAdd = new MqttTopicFilter();
+                        objAdd.Topic = indicator.Topic;
+                        topicFilters.Add(objAdd);
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Duplicate Topic: {indicator.Topic}");
+                    }
+                }
+            }
+
+            Console.WriteLine("Subscribing to Filters...");
+            await client.SubscribeAsync(topicFilters.ToArray());
             client.UseApplicationMessageReceivedHandler(Client_ApplicationMessageReceivedHandler);
         }
 
