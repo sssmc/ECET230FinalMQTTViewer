@@ -11,6 +11,11 @@ namespace MQTTScreenData
 
         public IndicatorData[][] Indicators { get; set; }
 
+        public ScreenData()
+        {
+
+        }
+
 
         public ScreenData(string name, ConnectionData connection)
         {
