@@ -34,8 +34,33 @@
                 SemanticProperties.Hint="Counts the number of times you click"
                 Clicked="OnCounterClicked"
                 HorizontalOptions="Center" />
+            <Entry
+                x:Name="entry"
+                Placeholder="Enter text"/>
+
+            <VerticalStackLayout>
+                <Label
+                        Text="COM Port"
+                        VerticalOptions="Center"
+                        FontSize="Medium"
+                        Margin="20"/>
+                <HorizontalStackLayout>
+                    <Picker 
+                            x:Name="comPortPicker"
+                            Margin="20"/>
+                    <Button
+                            x:Name="comPortStartButton"
+                            Text="Open"
+                            Clicked="comPortStartButton_Clicked"
+                            HeightRequest="50"
+                            VerticalOptions="Start"
+                            Margin="20"
+                            />
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
 
         </VerticalStackLayout>
+        
     </ScrollView>
 
 </ContentPage>

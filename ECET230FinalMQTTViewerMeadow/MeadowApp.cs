@@ -120,7 +120,7 @@ namespace ECET230FinalMQTTViewerMeadow
         string filePath = MeadowOS.FileSystem.DataDirectory;
 
         //Name of data file
-        string fileName = "testScreen6.json";
+        string fileName = "testScreen7.json";
 
         //Check if already file exists
         if (File.Exists(filePath + "/" + fileName))
@@ -312,7 +312,7 @@ namespace ECET230FinalMQTTViewerMeadow
 
         void SerialPort_MessageReceived(object sender, SerialMessageData e)
         {
-            
+            Console.WriteLine(e.GetMessageString(Encoding.UTF8));   
         }
 
 
