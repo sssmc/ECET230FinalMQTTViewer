@@ -44,6 +44,12 @@ namespace ECET230FinalMQTTViewerMeadow
         //Serial Port
         ISerialPort serialPort;
 
+        bool haveHeaderData = false;
+
+        int payloadLength = 0;
+
+        private static System.Timers.Timer serialTimeoutTimer;
+
         //MQTT client
         IMqttClient client;
 
@@ -200,7 +206,7 @@ namespace ECET230FinalMQTTViewerMeadow
 
         //Create Serial Port
         serialPort = Device.PlatformOS.GetSerialPortName("Com1")
-                                        .CreateSerialPort(baudRate: 115200,
+                                        .CreateSerialPort(baudRate: 9600,
                                         readBufferSize: 2048);
         serialPort.Open();
         serialPort.DataReceived += SerialPort_MessageReceived;
@@ -212,11 +218,51 @@ namespace ECET230FinalMQTTViewerMeadow
 
         private void SerialPort_MessageReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            byte[] response = new byte[2048];
-            serialPort.Read(response, 0, 6);
-            Console.WriteLine("Data received: ");
-            string data = Encoding.UTF8.GetString(response, 0, response.Length);
-            Console.WriteLine(data);
+
+            if (serialPort.BytesToRead < 6 && haveHeaderData == false)
+            {
+                return;
+            }
+            else if (serialPort.BytesToRead >= 6 && haveHeaderData == false)
+            {
+                Console.WriteLine("Reading header data...");
+                byte[] response = new byte[6];
+                serialPort.Read(response, 0, 6);
+                Console.WriteLine("Header received: ");
+                string data = Encoding.UTF8.GetString(response, 0, response.Length);
+                Console.WriteLine(data);
+
+                payloadLength = int.Parse(data.Substring(2, 4));
+                Console.WriteLine($"Payload Length: {payloadLength}");
+
+                haveHeaderData = true;
+            }
+        
+            if(haveHeaderData && serialPort.BytesToRead < payloadLength)
+            {
+                return;
+            }
+            else if(haveHeaderData && serialPort.BytesToRead >= payloadLength)
+            {
+                Console.WriteLine("Reading payload data...");
+                byte[] response = new byte[payloadLength];
+                serialPort.Read(response, 0, payloadLength);
+                Console.WriteLine("Payload received: ");
+                string data = Encoding.UTF8.GetString(response, 0, response.Length);
+                Console.WriteLine(data);
+
+                haveHeaderData = false;
+                payloadLength = 0;
+                serialPort.ClearReceiveBuffer();
+            }
+            else
+            {
+                Console.WriteLine("Serial Error");
+                haveHeaderData = false;
+                payloadLength = 0;
+                serialPort.ClearReceiveBuffer();
+            }
+            
         }
 
         private void SwitchPageButton_Clicked(object sender, EventArgs e)
