@@ -25,7 +25,7 @@ namespace ECET230FinalMQTTViewerDesktop
         private void MainPage_Loaded(object sender, EventArgs e)
         {
             //Set Serial Port Perameters
-            serialPort.BaudRate = 115200;
+            serialPort.BaudRate = 4800;
             serialPort.ReceivedBytesThreshold = 1;
             serialPort.DataReceived += SerialPort_DataRecevied;
         }
@@ -45,7 +45,29 @@ namespace ECET230FinalMQTTViewerDesktop
 
         private void OnCounterClicked(object sender, EventArgs e)
         {
-            serialPort.WriteLine(entry.Text);
+            string packet = "##";
+            packet += entry.Text.Length.ToString("0000");
+            packet += entry.Text;
+
+            //Calculate Checksum
+
+            int checksum = 0;
+
+            char[] chars = new char[packet.Length];
+
+            chars = entry.Text.ToCharArray();
+
+            foreach(char c in chars)
+            {
+                checksum += c;
+            }
+
+            checksum %= 1000;
+
+            packet += checksum.ToString("0000");
+
+            Console.WriteLine($"Packet out: {packet}");
+            serialPort.WriteLine(packet);
         }
 
         private void comPortStartButton_Clicked(object sender, EventArgs e)
