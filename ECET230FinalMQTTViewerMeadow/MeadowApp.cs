@@ -207,12 +207,12 @@ namespace ECET230FinalMQTTViewerMeadow
 
         //Create Serial Port
         serialPort = Device.PlatformOS.GetSerialPortName("Com1")
-                                        .CreateSerialPort(baudRate: 9600,
+                                        .CreateSerialPort(baudRate: 4800,
                                         readBufferSize: 2048);
         serialPort.Open();
         serialPort.DataReceived += SerialPort_MessageReceived;
 
-        serialTimeoutTimer = new System.Timers.Timer(4000);
+        serialTimeoutTimer = new Timer(6000);
 
         serialTimeoutTimer.Elapsed += OnSerialTimeout;
 
@@ -252,14 +252,22 @@ namespace ECET230FinalMQTTViewerMeadow
                 Console.WriteLine("Reading header data...");
                 byte[] response = new byte[6];
                 serialPort.Read(response, 0, 6);
+
                 Console.WriteLine("Header received: ");
                 string data = Encoding.UTF8.GetString(response, 0, response.Length);
                 Console.WriteLine(data);
 
-                payloadLength = int.Parse(data.Substring(2, 4));
-                Console.WriteLine($"Payload Length: {payloadLength}");
-
-                haveHeaderData = true;
+                if (data.Substring(0, 2) == "##")
+                {
+                    payloadLength = int.Parse(data.Substring(2, 4)) + 4;
+                    Console.WriteLine($"Payload Length: {payloadLength}");
+                    haveHeaderData = true;
+                }
+                else
+                {
+                    Console.WriteLine("Header Error");
+                    serialTimeoutTimer.Stop();
+                }
             }
         
             if(haveHeaderData && serialPort.BytesToRead < payloadLength)
@@ -273,7 +281,12 @@ namespace ECET230FinalMQTTViewerMeadow
                 serialPort.Read(response, 0, payloadLength);
                 Console.WriteLine("Payload received: ");
                 string data = Encoding.UTF8.GetString(response, 0, response.Length);
-                Console.WriteLine(data);
+
+                Console.WriteLine(data.Substring(0,response.Length - 4));
+
+                Console.Write("Checksum: ");
+                int checksum = int.Parse(data.Substring(data.Length - 4, 4));
+                Console.WriteLine(checksum.ToString());
 
                 haveHeaderData = false;
                 payloadLength = 0;
