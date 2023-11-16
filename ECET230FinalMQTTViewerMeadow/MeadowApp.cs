@@ -22,14 +22,13 @@ using MQTTnet.Client.Subscribing;
 using MQTTnet.Client.Connecting;
 using MQTTnet.Client.Disconnecting;
 using Meadow.Hardware;
-using System.IO.Ports;
 
 //Internal Libs
 using MQTTScreenData;
 using MQTTSConnectionData;
-using System.IO;
 using Meadow.Foundation.Sensors.Buttons;
 using System.Collections.Generic;
+using System.IO;
 
 namespace ECET230FinalMQTTViewerMeadow
 {
@@ -43,7 +42,7 @@ namespace ECET230FinalMQTTViewerMeadow
         Ili9341 display;
 
         //Serial Port
-        ISerialMessagePort serialPort;
+        ISerialPort serialPort;
 
         //MQTT client
         IMqttClient client;
@@ -200,18 +199,24 @@ namespace ECET230FinalMQTTViewerMeadow
         }
 
         //Create Serial Port
-        serialPort = Device.CreateSerialMessagePort(
-            Device.PlatformOS.GetSerialPortName("COM1"),
-            suffixDelimiter: Encoding.UTF8.GetBytes("\n"),
-            preserveDelimiter: true);
-
-        serialPort.MessageReceived += SerialPort_MessageReceived;
-        serialPort.BaudRate = 115200;
+        serialPort = Device.PlatformOS.GetSerialPortName("Com1")
+                                        .CreateSerialPort(baudRate: 115200,
+                                        readBufferSize: 2048);
         serialPort.Open();
+        serialPort.DataReceived += SerialPort_MessageReceived;
 
         onboardLed.SetColor(Color.Green);
 
         return base.Initialize();
+        }
+
+        private void SerialPort_MessageReceived(object sender, SerialDataReceivedEventArgs e)
+        {
+            byte[] response = new byte[2048];
+            serialPort.Read(response, 0, 6);
+            Console.WriteLine("Data received: ");
+            string data = Encoding.UTF8.GetString(response, 0, response.Length);
+            Console.WriteLine(data);
         }
 
         private void SwitchPageButton_Clicked(object sender, EventArgs e)
@@ -304,15 +309,10 @@ namespace ECET230FinalMQTTViewerMeadow
         {
             Console.WriteLine($"Message received on topic {e.ApplicationMessage.Topic}");
             Console.WriteLine($"Message: {Encoding.UTF8.GetString(e.ApplicationMessage.Payload)}");
-           
+
             screen.updateIndicatorValue(e.ApplicationMessage.Topic, Encoding.UTF8.GetString(e.ApplicationMessage.Payload));
 
             return Task.CompletedTask;
-        }
-
-        void SerialPort_MessageReceived(object sender, SerialMessageData e)
-        {
-            Console.WriteLine(e.GetMessageString(Encoding.UTF8));   
         }
 
 
