@@ -29,6 +29,7 @@ using MQTTSConnectionData;
 using Meadow.Foundation.Sensors.Buttons;
 using System.Collections.Generic;
 using System.IO;
+using System.Timers;
 
 namespace ECET230FinalMQTTViewerMeadow
 {
@@ -211,13 +212,36 @@ namespace ECET230FinalMQTTViewerMeadow
         serialPort.Open();
         serialPort.DataReceived += SerialPort_MessageReceived;
 
+        serialTimeoutTimer = new System.Timers.Timer(4000);
+
+        serialTimeoutTimer.Elapsed += OnSerialTimeout;
+
+
         onboardLed.SetColor(Color.Green);
 
         return base.Initialize();
         }
 
+        private void OnSerialTimeout(object sender, ElapsedEventArgs e)
+        {
+            Console.WriteLine("Serial Timeout");
+            haveHeaderData = false;
+            payloadLength = 0;
+            serialPort.ClearReceiveBuffer();
+            serialTimeoutTimer.Stop();
+        }
+
         private void SerialPort_MessageReceived(object sender, SerialDataReceivedEventArgs e)
         {
+            if(serialTimeoutTimer.Enabled == false)
+            {
+                serialTimeoutTimer.Start();
+            }
+            else
+            {
+                serialTimeoutTimer.Stop();
+                serialTimeoutTimer.Start();
+            }
 
             if (serialPort.BytesToRead < 6 && haveHeaderData == false)
             {
@@ -254,6 +278,7 @@ namespace ECET230FinalMQTTViewerMeadow
                 haveHeaderData = false;
                 payloadLength = 0;
                 serialPort.ClearReceiveBuffer();
+                serialTimeoutTimer.Stop();
             }
             else
             {
