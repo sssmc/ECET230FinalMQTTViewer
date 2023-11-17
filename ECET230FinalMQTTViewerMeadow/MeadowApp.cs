@@ -3,8 +3,12 @@ using System;
 using System.Threading.Tasks;
 using System.Text;
 using System.Text.Json;
+using System.Collections.Generic;
+using System.IO;
+using System.Timers;
 
 using Meadow;
+using Meadow.Hardware;
 using Meadow.Devices;
 using Meadow.Foundation;
 using Meadow.Foundation.Displays;
@@ -12,6 +16,7 @@ using Meadow.Foundation.Graphics;
 using Meadow.Foundation.Leds;
 using Meadow.Peripherals.Displays;
 using Meadow.Peripherals.Leds;
+using Meadow.Foundation.Sensors.Buttons;
 
 
 //MQTTnet
@@ -21,15 +26,14 @@ using MQTTnet;
 using MQTTnet.Client.Subscribing;
 using MQTTnet.Client.Connecting;
 using MQTTnet.Client.Disconnecting;
-using Meadow.Hardware;
+
 
 //Internal Libs
 using MQTTScreenData;
 using MQTTSConnectionData;
-using Meadow.Foundation.Sensors.Buttons;
-using System.Collections.Generic;
-using System.IO;
-using System.Timers;
+using ChecksumCalculator;
+
+
 
 namespace ECET230FinalMQTTViewerMeadow
 {
@@ -284,9 +288,24 @@ namespace ECET230FinalMQTTViewerMeadow
 
                 Console.WriteLine(data.Substring(0,response.Length - 4));
 
-                Console.Write("Checksum: ");
-                int checksum = int.Parse(data.Substring(data.Length - 4, 4));
-                Console.WriteLine(checksum.ToString());
+                Console.Write("Checksum Received: ");
+                int checksumReceived = int.Parse(data.Substring(data.Length - 4, 4));
+                Console.WriteLine(checksumReceived.ToString());
+
+                Console.Write("Checksum Calculated: ");
+
+                int calculatedChecksum = ChecksumCalculator.ChecksumCalculator.CalculateChecksum(data.Substring(0, data.Length - 4));
+
+                Console.WriteLine(calculatedChecksum.ToString());
+
+                if (calculatedChecksum == checksumReceived)
+                {
+                    Console.WriteLine("Checksums Match");
+                }
+                else
+                {
+                    Console.WriteLine("Checksums Do Not Match");
+                }
 
                 haveHeaderData = false;
                 payloadLength = 0;
