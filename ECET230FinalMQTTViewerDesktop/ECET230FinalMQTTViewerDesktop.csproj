@@ -57,6 +57,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\ChecksumCalculator\ChecksumCalculator.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <Compile Update="Views\SerialConnectionView.xaml.cs">
 	    <DependentUpon>SerialConnectionView.xaml</DependentUpon>
 	  </Compile>

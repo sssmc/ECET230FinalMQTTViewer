@@ -1,4 +1,5 @@
 ﻿using System.IO.Ports;
+using ChecksumCalculator;
 
 namespace ECET230FinalMQTTViewerDesktop
 {
@@ -50,21 +51,7 @@ namespace ECET230FinalMQTTViewerDesktop
             packet += entry.Text;
 
             //Calculate Checksum
-
-            int checksum = 0;
-
-            char[] chars = new char[packet.Length];
-
-            chars = entry.Text.ToCharArray();
-
-            foreach(char c in chars)
-            {
-                checksum += c;
-            }
-
-            checksum %= 1000;
-
-            packet += checksum.ToString("0000");
+            packet += ChecksumCalculator.ChecksumCalculator.CalculateChecksum(packet).ToString("0000");
 
             Console.WriteLine($"Packet out: {packet}");
             serialPort.WriteLine(packet);
