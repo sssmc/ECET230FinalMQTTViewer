@@ -51,7 +51,7 @@ namespace ECET230FinalMQTTViewerDesktop
             packet += entry.Text;
 
             //Calculate Checksum
-            packet += ChecksumCalculator.ChecksumCalculator.CalculateChecksum(packet).ToString("0000");
+            packet += ChecksumCalculator.ChecksumCalculator.CalculateChecksum(entry.Text).ToString("0000");
 
             Console.WriteLine($"Packet out: {packet}");
             serialPort.WriteLine(packet);

@@ -32,8 +32,7 @@ using MQTTnet.Client.Disconnecting;
 using MQTTScreenData;
 using MQTTSConnectionData;
 using ChecksumCalculator;
-
-
+using System.Security.Cryptography.X509Certificates;
 
 namespace ECET230FinalMQTTViewerMeadow
 {
@@ -64,7 +63,11 @@ namespace ECET230FinalMQTTViewerMeadow
 
         PushButton switchPageButton;
 
-    public override Task Initialize()
+        const string dataFileName = "testScreen12.json";
+
+        string dataFilePath = MeadowOS.FileSystem.DataDirectory;
+
+        public override Task Initialize()
     {
         Resolver.Log.Info("Initialize...");
 
@@ -102,12 +105,12 @@ namespace ECET230FinalMQTTViewerMeadow
         //Default Screen Data if no file is found
         ConnectionData testConnection; testConnection = new ConnectionData("ThingSpeak",
                                             "FDkPCxA2KTkHMgANKik6NgI",
-                                            "mqtt3.thingspeak.com",
+                                            "broker.mqtt-dashboard.com",
                                             1883,
                                             "FDkPCxA2KTkHMgANKik6NgI",
                                             "lRBFHoyhV9ruKuh0sy7s0QXm",
-                                            "IoT-Security", 
-                                            "B@kery204!");
+                                            "White Rabbit", 
+                                            "2511560A7196");
 
         IndicatorData tempIndicator = new IndicatorData("Temperature", "Temperature", "channels/2328115/subscribe/fields/field1", "numeric", 100, 0);
         IndicatorData humIndicator = new IndicatorData("Humidity", "Humidity", "channels/2328115/subscribe/fields/field2", "numeric", 100, 0);
@@ -126,21 +129,17 @@ namespace ECET230FinalMQTTViewerMeadow
 
         Console.WriteLine("Loading Data File...");
 
-        //Location of data file
-        string filePath = MeadowOS.FileSystem.DataDirectory;
 
-        //Name of data file
-        string fileName = "testScreen7.json";
 
         //Check if already file exists
-        if (File.Exists(filePath + "/" + fileName))
+        if (File.Exists(dataFilePath + "/" + dataFileName))
         {
             Console.WriteLine("File Found");
 
             try
             {
                 // Open the text file using a stream reader.
-                using (var sr = new StreamReader(filePath + "/" + fileName))
+                using (var sr = new StreamReader(dataFilePath + "/" + dataFileName))
                 {
                     // Read the stream as a string, and write the string to the console.
                     string file = sr.ReadToEnd();
@@ -171,7 +170,7 @@ namespace ECET230FinalMQTTViewerMeadow
                 Console.WriteLine("File not found, creating file using default data");
 
                 //Create file using default data
-                using (var fs = File.CreateText(Path.Combine(filePath, fileName)))
+                using (var fs = File.CreateText(Path.Combine(dataFilePath, dataFileName)))
                 {
                     fs.WriteLine(JsonSerializer.Serialize(defaultScreenData));
 
@@ -196,18 +195,7 @@ namespace ECET230FinalMQTTViewerMeadow
         screen.drawScreen();
 
         //Connect to Wifi
-        Resolver.Log.Info($"Connecting to Wifi SSID: {screen.screenData.Connection.WifiSSID}");
-
-        try
-        {
-            var wifi = Device.NetworkAdapters.Primary<IWiFiNetworkAdapter>();
-            wifi.Connect(screen.screenData.Connection.WifiSSID, screen.screenData.Connection.WifiPassword, TimeSpan.FromSeconds(45));
-            wifi.NetworkConnected += Wifi_NetworkConnected;
-        }
-        catch (Exception ex)
-        {
-            Resolver.Log.Error($"Failed to Connect to Wifi: : {ex.Message}");
-        }
+        connectToWifi();
 
         //Create Serial Port
         serialPort = Device.PlatformOS.GetSerialPortName("Com1")
@@ -281,36 +269,76 @@ namespace ECET230FinalMQTTViewerMeadow
             else if(haveHeaderData && serialPort.BytesToRead >= payloadLength)
             {
                 Console.WriteLine("Reading payload data...");
-                byte[] response = new byte[payloadLength];
-                serialPort.Read(response, 0, payloadLength);
-                Console.WriteLine("Payload received: ");
-                string data = Encoding.UTF8.GetString(response, 0, response.Length);
+                byte[] dataBytes = new byte[payloadLength];
 
-                Console.WriteLine(data.Substring(0,response.Length - 4));
+                serialPort.Read(dataBytes, 0, payloadLength);
+
+                string data = Encoding.UTF8.GetString(dataBytes, 0, dataBytes.Length);
+                string payload = data.Substring(0, dataBytes.Length - 4);
+
+                Console.WriteLine("Payload received: ");
+                Console.WriteLine(payload);
 
                 Console.Write("Checksum Received: ");
                 int checksumReceived = int.Parse(data.Substring(data.Length - 4, 4));
                 Console.WriteLine(checksumReceived.ToString());
 
                 Console.Write("Checksum Calculated: ");
-
                 int calculatedChecksum = ChecksumCalculator.ChecksumCalculator.CalculateChecksum(data.Substring(0, data.Length - 4));
-
                 Console.WriteLine(calculatedChecksum.ToString());
 
                 if (calculatedChecksum == checksumReceived)
                 {
                     Console.WriteLine("Checksums Match");
+
+                    haveHeaderData = false;
+                    payloadLength = 0;
+                    serialPort.ClearReceiveBuffer();
+                    serialTimeoutTimer.Stop();
+
+                    Console.WriteLine("Updating Screen...");
+                    ScreenData newScreenData = new ScreenData();
+                    newScreenData = JsonSerializer.Deserialize<ScreenData>(payload);
+                    screen.screenData = newScreenData;
+                    screen.drawScreen();
+                    Console.WriteLine("Screen Updated");
+                    Console.WriteLine("Writing data to file...");
+
+                    try {
+                        using (var fs = File.CreateText(Path.Combine(dataFilePath, dataFileName)))
+                        {
+                            fs.WriteLine(JsonSerializer.Serialize(newScreenData));
+                        }
+                    }
+                    catch
+                    {
+                        Console.WriteLine("Failed to write to data file");
+                    }
+                    
+                    //Restart the meadow board if the wifi connnecting info has changed
+                    if(newScreenData.Connection.WifiSSID != screenData.Connection.WifiSSID || newScreenData.Connection.WifiPassword != screenData.Connection.WifiPassword)
+                    {
+                        Console.WriteLine("Wifi Info Changed, Restarting...");
+                        //Disconnect from Wifi
+
+                        //Restart the board
+                        Device.WatchdogEnable(TimeSpan.FromMilliseconds(1));
+                    }
+
+                    //Diconected from MQTT server so that we can reconnect with new info
+                    client.DisconnectAsync();
+
                 }
                 else
                 {
                     Console.WriteLine("Checksums Do Not Match");
+                    haveHeaderData = false;
+                    payloadLength = 0;
+                    serialPort.ClearReceiveBuffer();
+                    serialTimeoutTimer.Stop();
                 }
 
-                haveHeaderData = false;
-                payloadLength = 0;
-                serialPort.ClearReceiveBuffer();
-                serialTimeoutTimer.Stop();
+                
             }
             else
             {
@@ -332,7 +360,39 @@ namespace ECET230FinalMQTTViewerMeadow
             screen.drawScreen();
         }
 
-        private async void Wifi_NetworkConnected(INetworkAdapter networkAdapter, NetworkConnectionEventArgs args)
+        private async void disconnectFromWifi()
+        {
+            //Disconnect from Wifi
+            Resolver.Log.Info($"Disconnecting from Wifi SSID: {screen.screenData.Connection.WifiSSID}");
+
+            try
+            {
+                var wifi = Device.NetworkAdapters.Primary<IWiFiNetworkAdapter>();
+                await wifi.Disconnect(false);
+            }
+            catch (Exception ex)
+            {
+                Resolver.Log.Error($"Failed to Disconnect from Wifi: : {ex.Message}");
+            }
+        }
+
+        private async void connectToWifi()
+        {
+            //Connect to Wifi
+            Resolver.Log.Info($"Connecting to Wifi SSID: {screen.screenData.Connection.WifiSSID}");
+
+            try
+            {
+                var wifi = Device.NetworkAdapters.Primary<IWiFiNetworkAdapter>();
+                await wifi.Connect(screen.screenData.Connection.WifiSSID, screen.screenData.Connection.WifiPassword, TimeSpan.FromSeconds(45),reconnection:Meadow.Gateway.WiFi.ReconnectionType.Automatic);
+                wifi.NetworkConnected += Wifi_NetworkConnected;
+            }
+            catch (Exception ex)
+            {
+                Resolver.Log.Error($"Failed to Connect to Wifi: : {ex.Message}");
+            }
+        }
+        private void Wifi_NetworkConnected(INetworkAdapter networkAdapter, NetworkConnectionEventArgs args)
         {
           
             Console.WriteLine("Connected to Wifi with:");
@@ -340,7 +400,7 @@ namespace ECET230FinalMQTTViewerMeadow
             Console.WriteLine($"Subnet mask: {networkAdapter.SubnetMask}");
             Console.WriteLine($"Gateway: {networkAdapter.Gateway}");
 
-            await MQTT_Connect(screenData.Connection);
+            MQTT_Connect(screenData.Connection);
         }
 
         private async Task MQTT_Connect(ConnectionData connection)
@@ -356,11 +416,25 @@ namespace ECET230FinalMQTTViewerMeadow
                                     .WithCleanSession()
                                     .Build();
 
-            client = mqttFactory.CreateMqttClient();
+            if (client != null && client.IsConnected)
+            {
+                client.DisconnectAsync();
+            }
+            else
+            {
+                client = mqttFactory.CreateMqttClient();
+
+                client.UseConnectedHandler(Client_ConnectedAsync);
+                client.UseDisconnectedHandler(Client_DisconnectedAsync);
+
+                await client.ConnectAsync(mqttClientOptions);
+            }
+
             
-            client.UseConnectedHandler(Client_ConnectedAsync);
-            client.UseDisconnectedHandler(Client_DisconnectedAsync);
-            await client.ConnectAsync(mqttClientOptions);
+
+            
+            
+            
         }
 
         private async Task Client_ConnectedAsync(MqttClientConnectedEventArgs e)
