@@ -5,13 +5,20 @@ namespace ECET230FinalMQTTViewerDesktop
 {
     public partial class MainPage : ContentPage
     {
+        int count = 0;
+
+        SerialPort serialPort;
+        bool comPortIsOpen;
 
         public MainPage()
         {
+            comPortIsOpen = false;
+
+            serialPort = new SerialPort();
+
             InitializeComponent();
 
-            comPortPicker.ItemsSource = App.dataSerialConnection.comPortNames;
-
+            comPortPicker.ItemsSource = SerialPort.GetPortNames();
             Loaded += MainPage_Loaded;
 
         }
@@ -19,13 +26,17 @@ namespace ECET230FinalMQTTViewerDesktop
         private void MainPage_Loaded(object sender, EventArgs e)
         {
             //Set Serial Port Perameters
-            App.dataSerialConnection.baudRate = 4800;
-            App.dataSerialConnection.DataReceived += DataSerialConnection_DataReceived;
+            serialPort.BaudRate = 4800;
+            serialPort.ReceivedBytesThreshold = 1;
+            serialPort.DataReceived += SerialPort_DataRecevied;
         }
 
-        private void DataSerialConnection_DataReceived(object sender, Models.DataReceivedEventArgs e)
+        private void SerialPort_DataRecevied(object sender, SerialDataReceivedEventArgs e)
         {
-            Console.WriteLine(e.data);
+            //When we receive a line from the serial port
+            string newPacket = serialPort.ReadLine();
+            Console.WriteLine(newPacket);
+            MainThread.BeginInvokeOnMainThread(MyMainThreadCode);
         }
 
         private async void MyMainThreadCode()
@@ -43,24 +54,26 @@ namespace ECET230FinalMQTTViewerDesktop
             packet += ChecksumCalculator.ChecksumCalculator.CalculateChecksum(entry.Text).ToString("0000");
 
             Console.WriteLine($"Packet out: {packet}");
-            App.dataSerialConnection.WriteLine(packet);
+            serialPort.WriteLine(packet);
         }
 
         private void comPortStartButton_Clicked(object sender, EventArgs e)
         {
             //If we click the com port button
-            if (App.dataSerialConnection.comPortIsOpen)
+            if (comPortIsOpen)
             {
                 //Close the port
-                App.dataSerialConnection.CloseComPort();
+                comPortIsOpen = false;
+                serialPort.Close();
                 comPortStartButton.Text = "Open";
             }
             else
             {
                 //Open the port
-                App.dataSerialConnection.comPortName = comPortPicker.SelectedItem.ToString();
+                comPortIsOpen = true;
+                serialPort.PortName = comPortPicker.SelectedItem.ToString();
 
-                App.dataSerialConnection.OpenComPort();
+                serialPort.Open();
 
                 comPortStartButton.Text = "Close";
             }
