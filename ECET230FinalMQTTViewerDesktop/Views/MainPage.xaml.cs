@@ -1,7 +1,7 @@
 ﻿using System.IO.Ports;
 using ChecksumCalculator;
 
-namespace ECET230FinalMQTTViewerDesktop
+namespace ECET230FinalMQTTViewerDesktop.Views
 {
     public partial class MainPage : ContentPage
     {

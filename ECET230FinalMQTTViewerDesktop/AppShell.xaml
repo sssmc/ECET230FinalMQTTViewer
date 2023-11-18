@@ -7,11 +7,10 @@
     Shell.FlyoutBehavior="Disabled">
 
     <TabBar>
-        <Tab Title="Connect">
-            <ShellContent ContentTemplate="{DataTemplate local:SerialConnectionView}" />
+        <Tab Title="Connection">
+            <ShellContent ContentTemplate="{DataTemplate local:SerialConnectionView}"/>
         </Tab>
-        <Tab
-            Title="Edit">
+        <Tab Title="Edit">
             <ShellContent ContentTemplate="{DataTemplate local:ScreenEditView}" />
         </Tab>
     </TabBar>
