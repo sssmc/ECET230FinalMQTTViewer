@@ -65,6 +65,18 @@ namespace ECET230FinalMQTTViewerDesktop.ViewModels
         }
 
         [RelayCommand]
+        void DataPortUpdatePortNames()
+        {
+            OnPropertyChanged(nameof(DataPortNames));
+        }
+
+        [RelayCommand]
+        void DebugPortUpdatePortNames()
+        {
+            OnPropertyChanged(nameof(DebugPortNames));
+        }
+
+        [RelayCommand]
         void DebugPortOpenClose()
         {
             if (App.debugSerialConnection.comPortIsOpen)
