@@ -2,8 +2,16 @@
 {
     public partial class App : Application
     {
+
+        public static ECET230FinalMQTTViewerDesktop.Models.SerialConnectionModel dataSerialConnection;
+        public static ECET230FinalMQTTViewerDesktop.Models.SerialConnectionModel debugSerialConnection;
+
         public App()
         {
+            dataSerialConnection = new ECET230FinalMQTTViewerDesktop.Models.SerialConnectionModel();
+
+            debugSerialConnection = new ECET230FinalMQTTViewerDesktop.Models.SerialConnectionModel();
+
             InitializeComponent();
 
             MainPage = new AppShell();
