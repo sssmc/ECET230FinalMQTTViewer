@@ -51,6 +51,10 @@ namespace ECET230FinalMQTTViewerDesktop.Models
 
         public event EventHandler<DataReceivedEventArgs> DataReceived;
 
+        public event EventHandler ComPortOpened;
+
+        public event EventHandler ComPortClosed;
+
         public SerialConnectionModel()
         {
             _serialPort = new SerialPort();
@@ -72,12 +76,14 @@ namespace ECET230FinalMQTTViewerDesktop.Models
             _serialPort.PortName = comPortName;
             _serialPort.Open();
             _comPortIsOpen = true;
+            ComPortOpened?.Invoke(this, new EventArgs());
         }
 
         public void CloseComPort()
         {
             _serialPort.Close();
             _comPortIsOpen = false;
+            ComPortClosed?.Invoke(this, new EventArgs());
         }
         public void WriteLine(string data)
         {
