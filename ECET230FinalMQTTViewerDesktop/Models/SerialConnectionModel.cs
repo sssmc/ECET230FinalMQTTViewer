@@ -59,7 +59,7 @@ namespace ECET230FinalMQTTViewerDesktop.Models
         {
             _serialPort = new SerialPort();
             _comPortIsOpen = false;
-            _baudRate = 9600;
+            _baudRate = 4800;
             _serialPort.BaudRate = _baudRate;
             _serialPort.DataReceived += SerialPort_DataReceived;
         }

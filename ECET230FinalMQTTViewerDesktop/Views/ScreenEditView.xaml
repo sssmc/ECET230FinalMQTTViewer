@@ -1,11 +1,82 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:ECET230FinalMQTTViewerDesktop.ViewModels"
              x:Class="ECET230FinalMQTTViewerDesktop.Views.ScreenEditView">
+    <ContentPage.BindingContext>
+        <local:ScreenEditViewModel/>
+    </ContentPage.BindingContext>
+    
     <VerticalStackLayout>
         <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
+            Text="Screen Edit View"
+            FontSize="Large"
+            HorizontalOptions="Center"/>
+        <HorizontalStackLayout>
+            <VerticalStackLayout>
+                <Label Text="Screens"
+                       Margin="20"
+                       FontSize="Medium"/>
+                <Picker
+                        Margin="20"
+                        FontSize="Medium"
+                        ItemsSource="{Binding ScreenNames}"
+                        SelectedIndex="{Binding CurrentScreenIndex}"/>
+                <Label 
+                        Text="Indicators"
+                        FontSize="Medium"
+                        Margin="20"/>
+                <Picker
+                        Margin="20"
+                        FontSize="Medium"
+                        ItemsSource="{Binding CurrentScreenIndicatorNames}"
+                        SelectedIndex="{Binding CurrentIndicatorIndex}"
+                        />
+                <Button
+                        Text="Program"
+                        FontSize="Medium"
+                        Margin="20"
+                        Command="{Binding ProgramScreenDataCommand}"/>
+                <Label
+                    Text="Program Status"
+                    Margin="20"/>
+            </VerticalStackLayout>
+            <VerticalStackLayout>
+                <Label Text="Indicator"
+                       Margin="20"
+                       FontSize="Medium"/>
+                <HorizontalStackLayout>
+                    <Label Text="Name:"
+                           FontSize="Medium"
+                           Margin="20"/>
+                    <Entry Text="{Binding CurrentIndicatorName}"
+                           Margin="20"/>
+                </HorizontalStackLayout>
+                <HorizontalStackLayout>
+                    <Label Text="Type:"
+                           FontSize="Medium"
+                           Margin="20"/>
+                    <Picker
+                        Margin="20"
+                        FontSize="Medium"
+                        />
+                </HorizontalStackLayout>
+                <HorizontalStackLayout>
+                    <Label 
+                        Text="Topic:"
+                        FontSize="Medium"
+                        Margin="20"/>
+                    <Entry Text="{Binding CurrentIndicatorTopic}"/>
+                    
+                </HorizontalStackLayout>
+                <HorizontalStackLayout>
+                    <Label 
+                        Text="Min"
+                        FontSize="Medium"
+                        Margin="20"/>
+                </HorizontalStackLayout>
+
+            </VerticalStackLayout>
+        </HorizontalStackLayout>
     </VerticalStackLayout>
 </ContentPage>
