@@ -235,15 +235,15 @@ namespace ECET230FinalMQTTViewerMeadow
                 serialTimeoutTimer.Start();
             }
 
-            if (serialPort.BytesToRead < 6 && haveHeaderData == false)
+            if (serialPort.BytesToRead < 7 && haveHeaderData == false)
             {
                 return;
             }
-            else if (serialPort.BytesToRead >= 6 && haveHeaderData == false)
+            else if (serialPort.BytesToRead >= 7 && haveHeaderData == false)
             {
                 Console.WriteLine("Reading header data...");
-                byte[] response = new byte[6];
-                serialPort.Read(response, 0, 6);
+                byte[] response = new byte[7];
+                serialPort.Read(response, 0, 7);
 
                 Console.WriteLine("Header received: ");
                 string data = Encoding.UTF8.GetString(response, 0, response.Length);
@@ -251,14 +251,28 @@ namespace ECET230FinalMQTTViewerMeadow
 
                 if (data.Substring(0, 2) == "##")
                 {
-                    payloadLength = int.Parse(data.Substring(2, 4)) + 4;
-                    Console.WriteLine($"Payload Length: {payloadLength}");
-                    haveHeaderData = true;
+                    if(data.Substring(2,1) == "0")
+                    {
+                        payloadLength = int.Parse(data.Substring(3, 4)) + 4;
+                        Console.WriteLine($"Payload Length: {payloadLength}");
+                        haveHeaderData = true;
+                    }else if(data.Substring(2, 1) == "1")
+                    {
+                        Console.WriteLine("Data Request Packet Recevied");
+                        SendDataPacket();
+                        haveHeaderData = false;
+                        payloadLength = 0;
+                        serialPort.ClearReceiveBuffer();
+                        serialTimeoutTimer.Stop();
+                        return;
+                    }
+                    
                 }
                 else
                 {
                     Console.WriteLine("Header Error");
                     serialTimeoutTimer.Stop();
+                    return;
                 }
             }
         
@@ -314,6 +328,8 @@ namespace ECET230FinalMQTTViewerMeadow
                     {
                         Console.WriteLine("Failed to write to data file");
                     }
+
+                    Console.WriteLine("File Written");
                     
                     //Restart the meadow board if the wifi connnecting info has changed
                     if(newScreenData.Connection.WifiSSID != screenData.Connection.WifiSSID || newScreenData.Connection.WifiPassword != screenData.Connection.WifiPassword)
@@ -336,6 +352,7 @@ namespace ECET230FinalMQTTViewerMeadow
                     payloadLength = 0;
                     serialPort.ClearReceiveBuffer();
                     serialTimeoutTimer.Stop();
+                    return;
                 }
 
                 
@@ -346,8 +363,22 @@ namespace ECET230FinalMQTTViewerMeadow
                 haveHeaderData = false;
                 payloadLength = 0;
                 serialPort.ClearReceiveBuffer();
+                return;
             }
             
+        }
+
+        private void SendDataPacket()
+        {
+            Console.WriteLine("Sending Screen Data...");
+            string payload = JsonSerializer.Serialize(screenData);
+            string packet = "##0";
+            packet += payload.Length.ToString("0000");
+            packet += payload;
+            packet += ChecksumCalculator.ChecksumCalculator.CalculateChecksum(payload).ToString("0000");
+            packet += "\n";
+            serialPort.Write(Encoding.UTF8.GetBytes(packet.ToCharArray()));
+            Console.WriteLine("Screen Data Sent");
         }
 
         private void SwitchPageButton_Clicked(object sender, EventArgs e)
