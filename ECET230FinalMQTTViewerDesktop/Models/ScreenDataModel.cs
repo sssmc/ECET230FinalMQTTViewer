@@ -32,8 +32,8 @@ namespace ECET230FinalMQTTViewerDesktop.Models
                                             1883,
                                             "FDkPCxA2KTkHMgANKik6NgI",
                                             "lRBFHoyhV9ruKuh0sy7s0QXm",
-                                            "White Rabbit",
-                                            "2511560A7196");
+                                            "IoT-Security",
+                                            "B@kery204!");
 
             IndicatorData tempIndicator = new IndicatorData("Temperature", "Temperature", "channels/2328115/subscribe/fields/field1", "numeric", 100, 0);
             IndicatorData humIndicator = new IndicatorData("Humidity", "Humidity", "channels/2328115/subscribe/fields/field2", "numeric", 100, 0);
@@ -101,7 +101,7 @@ namespace ECET230FinalMQTTViewerDesktop.Models
         {
             string payload = JsonSerializer.Serialize<ScreenData>(_screenData);
 
-            string packet = $"##{payload.Length.ToString("0000")}{payload}{ChecksumCalculator.ChecksumCalculator.CalculateChecksum(payload).ToString("0000")}";
+            string packet = $"##0{payload.Length.ToString("0000")}{payload}{ChecksumCalculator.ChecksumCalculator.CalculateChecksum(payload).ToString("0000")}";
             
             _serialConnectionModel.WriteLine(packet);
         }
