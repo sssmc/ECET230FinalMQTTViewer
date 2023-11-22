@@ -18,6 +18,10 @@ namespace ECET230FinalMQTTViewerMeadow
 
         public int currentScreen { get; set; }
 
+        public bool displayAlert { get; set; }
+
+        public string alertText { get; set;}
+
         public Screen(ScreenData screenData, MicroGraphics graphics)
         {
             this.screenData = screenData;
@@ -28,23 +32,34 @@ namespace ECET230FinalMQTTViewerMeadow
             {
                 indicatorValues[i] = new string[4];
             }
+            this.displayAlert = false;
+            this.alertText = "";
         }
 
         public void drawScreen()
         {
             graphics.Clear();
 
-            for(int i =0; i<screenData.Indicators[currentScreen].Length; i++) 
+            if (displayAlert)
             {
-                if (indicatorValues[currentScreen][i] != null)
+                graphics.DrawText(5, 120, alertText);
+            }
+            else
+            {
+                for (int i = 0; i < screenData.Indicators[currentScreen].Length; i++)
                 {
-                    graphics.DrawText(5, i * 30, $"{screenData.Indicators[currentScreen][i].Name}: {indicatorValues[currentScreen][i]}");
-                }
-                else
-                {
-                    graphics.DrawText(5, i * 30, $"{screenData.Indicators[currentScreen][i].Name}: ----");
+                    if (indicatorValues[currentScreen][i] != null)
+                    {
+                        graphics.DrawText(5, i * 30, $"{screenData.Indicators[currentScreen][i].Name}: {indicatorValues[currentScreen][i]}");
+                    }
+                    else
+                    {
+                        graphics.DrawText(5, i * 30, $"{screenData.Indicators[currentScreen][i].Name}: ----");
+                    }
                 }
             }
+
+            
 
             graphics.Show();
         }

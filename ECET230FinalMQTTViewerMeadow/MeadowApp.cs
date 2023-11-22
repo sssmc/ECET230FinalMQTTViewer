@@ -225,6 +225,7 @@ namespace ECET230FinalMQTTViewerMeadow
 
         private void SerialPort_MessageReceived(object sender, SerialDataReceivedEventArgs e)
         {
+            
             if(serialTimeoutTimer.Enabled == false)
             {
                 serialTimeoutTimer.Start();
@@ -242,6 +243,11 @@ namespace ECET230FinalMQTTViewerMeadow
             else if (serialPort.BytesToRead >= 7 && haveHeaderData == false)
             {
                 Console.WriteLine("Reading header data...");
+
+                screen.alertText = "Receving Data";
+                screen.displayAlert = true;
+                screen.drawScreen();
+
                 byte[] response = new byte[7];
                 serialPort.Read(response, 0, 7);
 
@@ -264,6 +270,8 @@ namespace ECET230FinalMQTTViewerMeadow
                         payloadLength = 0;
                         serialPort.ClearReceiveBuffer();
                         serialTimeoutTimer.Stop();
+                        screen.displayAlert = false;
+                        screen.drawScreen();
                         return;
                     }
                     
@@ -272,6 +280,8 @@ namespace ECET230FinalMQTTViewerMeadow
                 {
                     Console.WriteLine("Header Error");
                     serialTimeoutTimer.Stop();
+                    screen.displayAlert = false;
+                    screen.drawScreen();
                     return;
                 }
             }
@@ -330,9 +340,10 @@ namespace ECET230FinalMQTTViewerMeadow
                     }
 
                     Console.WriteLine("File Written");
-                    
+
+
                     //Restart the meadow board if the wifi connnecting info has changed
-                    if(newScreenData.Connection.WifiSSID != screenData.Connection.WifiSSID || newScreenData.Connection.WifiPassword != screenData.Connection.WifiPassword)
+                    if(client == null || newScreenData.Connection.WifiSSID != screenData.Connection.WifiSSID || newScreenData.Connection.WifiPassword != screenData.Connection.WifiPassword)
                     {
                         Console.WriteLine("Wifi Info Changed, Restarting...");
                         //Disconnect from Wifi
@@ -340,9 +351,16 @@ namespace ECET230FinalMQTTViewerMeadow
                         //Restart the board
                         Device.WatchdogEnable(TimeSpan.FromMilliseconds(1));
                     }
+                    else
+                    {
+                        //Diconected from MQTT server so that we can reconnect with new info
+                        client.DisconnectAsync();
 
-                    //Diconected from MQTT server so that we can reconnect with new info
-                    client.DisconnectAsync();
+                        screen.displayAlert = false;
+                        screen.drawScreen();
+                    }
+
+                    
 
                 }
                 else
@@ -352,6 +370,8 @@ namespace ECET230FinalMQTTViewerMeadow
                     payloadLength = 0;
                     serialPort.ClearReceiveBuffer();
                     serialTimeoutTimer.Stop();
+                    screen.displayAlert = false;
+                    screen.drawScreen();
                     return;
                 }
 
@@ -363,6 +383,8 @@ namespace ECET230FinalMQTTViewerMeadow
                 haveHeaderData = false;
                 payloadLength = 0;
                 serialPort.ClearReceiveBuffer();
+                screen.displayAlert = false;
+                screen.drawScreen();
                 return;
             }
             
