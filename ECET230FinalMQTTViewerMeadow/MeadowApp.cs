@@ -63,7 +63,7 @@ namespace ECET230FinalMQTTViewerMeadow
 
         PushButton switchPageButton;
 
-        const string dataFileName = "testScreen12.json";
+        const string dataFileName = "testScreen13.json";
 
         string dataFilePath = MeadowOS.FileSystem.DataDirectory;
 
@@ -118,12 +118,13 @@ namespace ECET230FinalMQTTViewerMeadow
         IndicatorData random1Indicator = new IndicatorData("Random1", "Random1", "channels/2328115/subscribe/fields/field3", "numeric", 10, 0);
         IndicatorData random2Indicator = new IndicatorData("Random2", "Random2", "channels/2328115/subscribe/fields/field4", "numeric", 10, 0);
 
-        IndicatorData[][] indicators = new IndicatorData[2][];
+        IndicatorData[][] indicators = new IndicatorData[3][];
 
         indicators[0] = new IndicatorData[] { tempIndicator, humIndicator };
         indicators[1] = new IndicatorData[] { random1Indicator, random2Indicator, tempIndicator, humIndicator };
+        indicators[2] = new IndicatorData[] { random2Indicator, random1Indicator};
 
-        ScreenData defaultScreenData = new ScreenData(testConnection, indicators);
+            ScreenData defaultScreenData = new ScreenData(testConnection, indicators);
 
         //File loading
 
@@ -323,7 +324,9 @@ namespace ECET230FinalMQTTViewerMeadow
                     Console.WriteLine("Updating Screen...");
                     ScreenData newScreenData = new ScreenData();
                     newScreenData = JsonSerializer.Deserialize<ScreenData>(payload);
-                    screen.screenData = newScreenData;
+
+                    screen = new Screen(newScreenData, graphics);
+
                     screen.drawScreen();
                     Console.WriteLine("Screen Updated");
                     Console.WriteLine("Writing data to file...");
@@ -406,7 +409,7 @@ namespace ECET230FinalMQTTViewerMeadow
         private void SwitchPageButton_Clicked(object sender, EventArgs e)
         {
             screen.currentScreen++;
-            if (screen.currentScreen > 1)
+            if (screen.currentScreen > screen.screenData.Indicators.GetLength(0) - 1)
             {
                 screen.currentScreen = 0;
             }

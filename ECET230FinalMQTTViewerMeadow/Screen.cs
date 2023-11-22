@@ -27,10 +27,10 @@ namespace ECET230FinalMQTTViewerMeadow
             this.screenData = screenData;
             this.graphics = graphics;
             this.currentScreen = 1;
-            this.indicatorValues = new string[10][];
-            for(int i = 0; i <10; i++)
+            this.indicatorValues = new string[screenData.Indicators.GetLength(0)][];
+            for(int i = 0; i < screenData.Indicators.GetLength(0); i++)
             {
-                indicatorValues[i] = new string[4];
+                indicatorValues[i] = new string[screenData.Indicators[i].Length];
             }
             this.displayAlert = false;
             this.alertText = "";
