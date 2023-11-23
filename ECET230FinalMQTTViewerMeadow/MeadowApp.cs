@@ -393,7 +393,7 @@ namespace ECET230FinalMQTTViewerMeadow
         private void SendDataPacket()
         {
             Console.WriteLine("Sending Screen Data...");
-            string payload = JsonSerializer.Serialize(screenData);
+            string payload = JsonSerializer.Serialize(screen.screenData);
             string packet = "##0";
             packet += payload.Length.ToString("0000");
             packet += payload;
