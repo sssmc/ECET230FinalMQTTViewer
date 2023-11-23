@@ -254,8 +254,9 @@ namespace ECET230FinalMQTTViewerDesktop.ViewModels
         {
             _screenDataModel = App.screenDataModel;
             _currentScreenIndex = 0;
-            _screenDataModel.RequestScreenDataFromDevice();
             _screenDataModel.ScreenDataUpdated += _screenDataModel_ScreenDataUpdated;
+            _screenDataModel.RequestScreenDataFromDevice();
+            
         }
 
         private void _screenDataModel_ScreenDataUpdated(object sender, EventArgs e)

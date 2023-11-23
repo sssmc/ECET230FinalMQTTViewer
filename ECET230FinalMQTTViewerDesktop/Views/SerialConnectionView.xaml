@@ -9,61 +9,61 @@
         <local:SerialConnectionViewModel/>
     </ContentPage.BindingContext>
     <HorizontalStackLayout>
-        <VerticalStackLayout>
+            <VerticalStackLayout>
+                <VerticalStackLayout>
+                    <Label
+                    Text="Data COM Port"
+                    VerticalOptions="Center"
+                    FontSize="Medium"
+                    Margin="20"/>
+                    <HorizontalStackLayout>
+                        <Picker 
+                        ItemsSource="{Binding DataPortNames}"
+                        SelectedItem="{Binding DataPortName}"
+                        Margin="20"/>
+                        <Button
+                        Text="{Binding DataPortOpenCloseButtonText}"
+                        Command="{Binding DataPortOpenCloseCommand}"
+                        HeightRequest="50"
+                        VerticalOptions="Start"
+                        Margin="20"
+                        />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
             <VerticalStackLayout>
                 <Label
-                Text="Data COM Port"
+                Text="Debug COM Port"
                 VerticalOptions="Center"
                 FontSize="Medium"
                 Margin="20"/>
                 <HorizontalStackLayout>
                     <Picker 
-                    ItemsSource="{Binding DataPortNames}"
-                    SelectedItem="{Binding DataPortName}"
-                    Margin="20"/>
+                        ItemsSource="{Binding DebugPortNames}"
+                        SelectedItem="{Binding DebugPortName}"
+                        Margin="20"/>
                     <Button
-                    Text="{Binding DataPortOpenCloseButtonText}"
-                    Command="{Binding DataPortOpenCloseCommand}"
-                    HeightRequest="50"
-                    VerticalOptions="Start"
-                    Margin="20"
-                    />
+                        Text="{Binding DebugPortOpenCloseButtonText}"
+                        Command="{Binding DebugPortOpenCloseCommand}"
+                        HeightRequest="50"
+                        VerticalOptions="Start"
+                        Margin="20"/>
                 </HorizontalStackLayout>
             </VerticalStackLayout>
-        </VerticalStackLayout>
-        <VerticalStackLayout>
-            <Label
-            Text="Debug COM Port"
-            VerticalOptions="Center"
-            FontSize="Medium"
-            Margin="20"/>
-            <HorizontalStackLayout>
-                <Picker 
-                    ItemsSource="{Binding DebugPortNames}"
-                    SelectedItem="{Binding DebugPortName}"
-                    Margin="20"/>
-                <Button
-                    Text="{Binding DebugPortOpenCloseButtonText}"
-                    Command="{Binding DebugPortOpenCloseCommand}"
-                    HeightRequest="50"
-                    VerticalOptions="Start"
-                    Margin="20"/>
-            </HorizontalStackLayout>
-        </VerticalStackLayout>
-        <VerticalStackLayout>
-            <Label
-                Text="Debug Log"
-                FontSize="Medium"
-                HorizontalOptions="Center"/>
-            <ScrollView
-                VerticalOptions="FillAndExpand"
-                VerticalScrollBarVisibility="Always">
+            <VerticalStackLayout>
+                <Label
+                    Text="Debug Log"
+                    FontSize="Medium"
+                    HorizontalOptions="Center"/>
+            <ScrollView>
                 <Label
                     Text="{Binding DebugPortReceivedData}"
                     FontSize="14"
                     HorizontalOptions="Center"
-                    VerticalOptions="FillAndExpand"/>
+                    VerticalOptions="StartAndExpand"
+                    MaximumHeightRequest="500"/>
             </ScrollView>
-        </VerticalStackLayout>
-    </HorizontalStackLayout>
+
+            </VerticalStackLayout>
+        </HorizontalStackLayout>
 </ContentPage>
