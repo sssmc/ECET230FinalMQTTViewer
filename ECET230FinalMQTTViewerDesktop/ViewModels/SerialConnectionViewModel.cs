@@ -102,6 +102,7 @@ namespace ECET230FinalMQTTViewerDesktop.ViewModels
             else
             {
                 App.dataSerialConnection.OpenComPort();
+                App.screenDataModel.RequestScreenDataFromDevice();
                 DataPortOpenCloseButtonText = "Close";
             }
         }

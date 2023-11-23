@@ -14,6 +14,56 @@
             HorizontalOptions="Center"/>
         <HorizontalStackLayout>
             <VerticalStackLayout>
+                <Label Text="WiFi Connection"
+                       FontSize="Medium"
+                       Margin="20"/>
+                <HorizontalStackLayout>
+                    <Label Text="SSID:"
+                           FontSize="Medium"
+                           Margin="20"/>
+                    <Entry Text="{Binding WiFiSSID}"/>
+                </HorizontalStackLayout>
+                <HorizontalStackLayout>
+                    <Label Text="Password:"
+                           FontSize="Medium"
+                           Margin="20"/>
+                    <Entry Text="{Binding WiFiPassword}"/>
+                </HorizontalStackLayout>
+                <Label Text="MQTT Connection"
+                       FontSize="Medium"
+                       Margin="20"/>
+                <HorizontalStackLayout>
+                    <Label Text="Broker:"
+                           FontSize="Medium"
+                           Margin="20"/>
+                    <Entry Text="{Binding MQTTBrokerAddress}"/>
+                </HorizontalStackLayout>
+                <HorizontalStackLayout>
+                    <Label Text="Port:"
+                           FontSize="Medium"
+                           Margin="20"/>
+                    <Entry Text="{Binding MQTTBrokerPort}"/>
+                </HorizontalStackLayout>
+                <HorizontalStackLayout>
+                    <Label Text="Client ID:"
+                           FontSize="Medium"
+                           Margin="20"/>
+                    <Entry Text="{Binding MQTTClientID}"/>
+                </HorizontalStackLayout>
+                <HorizontalStackLayout>
+                    <Label Text="User Name:"
+                           FontSize="Medium"
+                           Margin="20"/>
+                    <Entry Text="{Binding MQTTBrokerUsername}"/>
+                </HorizontalStackLayout>
+                <HorizontalStackLayout>
+                    <Label Text="Password:"
+                           FontSize="Medium"
+                           Margin="20"/>
+                    <Entry Text="{Binding MQTTBrokerPassword}"/>
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+            <VerticalStackLayout>
                 <Label Text="Screens"
                        Margin="20"
                        FontSize="Medium"/>

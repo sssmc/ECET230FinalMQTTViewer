@@ -61,6 +61,18 @@ namespace ECET230FinalMQTTViewerDesktop.Models
             SetScreenData(e.data);
         }
 
+        public ConnectionData Connection
+        {
+            get
+            {
+                return _screenData.Connection;
+            }
+            set
+            {
+                _screenData.Connection = value;
+            }
+        }
+
         public IndicatorData[] IndicatorsAtScreenIndex(int index)
         {
             if(index == -1)

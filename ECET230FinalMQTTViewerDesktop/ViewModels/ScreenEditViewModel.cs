@@ -166,6 +166,90 @@ namespace ECET230FinalMQTTViewerDesktop.ViewModels
             }
         }
 
+        public string WiFiSSID
+        {
+            get
+            {
+                return _screenDataModel.Connection.WifiSSID;
+            }
+            set
+            {
+                _screenDataModel.Connection.WifiSSID = value;
+            }
+        }
+
+        public string WiFiPassword
+        {
+            get
+            {
+                return _screenDataModel.Connection.WifiPassword;
+            }
+            set
+            {
+                _screenDataModel.Connection.WifiPassword = value;
+            }
+        }
+
+        public string MQTTBrokerAddress
+        {
+            get
+            {
+                return _screenDataModel.Connection.MQTTHost;
+            }
+            set
+            {
+                _screenDataModel.Connection.MQTTHost = value;
+            }
+        }
+
+        public int MQTTBrokerPort
+        {
+            get
+            {
+                return _screenDataModel.Connection.MQTTPort;
+            }
+            set
+            {
+                _screenDataModel.Connection.MQTTPort = value;
+            }
+        }
+
+        public string MQTTBrokerUsername
+        {
+            get
+            {
+                return _screenDataModel.Connection.MQTTUsername;
+            }
+            set
+            {
+                _screenDataModel.Connection.MQTTUsername = value;
+            }
+        }
+
+        public string MQTTBrokerPassword
+        {
+            get
+            {
+                return _screenDataModel.Connection.MQTTPassword;
+            }
+            set
+            {
+                _screenDataModel.Connection.MQTTPassword = value;
+            }
+        }
+
+        public string MQTTClientID
+        {
+            get
+            {
+                return _screenDataModel.Connection.MQTTClientId;
+            }
+            set
+            {
+                _screenDataModel.Connection.MQTTClientId = value;
+            }
+        }
+
         public ScreenEditViewModel()
         {
             _screenDataModel = App.screenDataModel;
