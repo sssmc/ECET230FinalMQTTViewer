@@ -72,6 +72,18 @@
                         FontSize="Medium"
                         ItemsSource="{Binding ScreenNames}"
                         SelectedIndex="{Binding CurrentScreenIndex}"/>
+                <HorizontalStackLayout>
+                    <Button
+                        Text="Add Screen"
+                        FontSize="Medium"
+                        Margin="20"
+                        Command="{Binding AddScreenCommand}"/>
+                    <Button
+                        Text="Delete Screen"
+                        FontSize="Medium"
+                        Margin="20"
+                        Command="{Binding RemoveScreenCommand}"/>
+                </HorizontalStackLayout>
                 <Label 
                         Text="Indicators"
                         FontSize="Medium"
@@ -82,6 +94,18 @@
                         ItemsSource="{Binding CurrentScreenIndicatorNames}"
                         SelectedIndex="{Binding CurrentIndicatorIndex}"
                         />
+                <HorizontalStackLayout>
+                    <Button
+                        Text="Add Indicator"
+                        FontSize="Medium"
+                        Margin="20"
+                        Command="{Binding AddIndicatorCommand}"/>
+                    <Button
+                        Text="Delete Indicator"
+                        FontSize="Medium"
+                        Margin="20"
+                        Command="{Binding RemoveIndicatorCommand}"/>
+                </HorizontalStackLayout>
                 <Button
                         Text="Program to Device"
                         FontSize="Medium"

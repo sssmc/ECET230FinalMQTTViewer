@@ -14,7 +14,7 @@ namespace ECET230FinalMQTTViewerDesktop.ViewModels
     partial class ScreenEditViewModel : ObservableValidator
     {
 
-        private ScreenDataModel _screenDataModel;
+        public ScreenDataModel _screenDataModel { get; set; }
 
 
         [ObservableProperty]
@@ -42,10 +42,10 @@ namespace ECET230FinalMQTTViewerDesktop.ViewModels
         {
             get
             {
-                string[] indicatorNames = new string[_screenDataModel.IndicatorsAtScreenIndex(CurrentScreenIndex).Length];
-                for(int i = 0; i < _screenDataModel.IndicatorsAtScreenIndex(CurrentScreenIndex).Length; i++)
+                string[] indicatorNames = new string[_screenDataModel.GetIndicatorsAtScreenIndex(CurrentScreenIndex).Length];
+                for(int i = 0; i < _screenDataModel.GetIndicatorsAtScreenIndex(CurrentScreenIndex).Length; i++)
                 {
-                    indicatorNames[i] = _screenDataModel.IndicatorsAtScreenIndex(CurrentScreenIndex)[i].Name;
+                    indicatorNames[i] = _screenDataModel.GetIndicatorsAtScreenIndex(CurrentScreenIndex)[i].Name;
                 }
                 return indicatorNames;
             }
@@ -55,12 +55,12 @@ namespace ECET230FinalMQTTViewerDesktop.ViewModels
         {
             get
             {
-                return _screenDataModel.IndicatorsAtScreenIndex(Math.Clamp(CurrentScreenIndex, 0, int.MaxValue))[Math.Clamp(CurrentIndicatorIndex, 0, int.MaxValue)].Name;
+                return _screenDataModel.GetIndicatorsAtScreenIndex(Math.Clamp(CurrentScreenIndex, 0, int.MaxValue))[Math.Clamp(CurrentIndicatorIndex, 0, int.MaxValue)].Name;
             }
             set
             {
 
-                _screenDataModel.IndicatorsAtScreenIndex(Math.Clamp(CurrentScreenIndex, 0, int.MaxValue))[Math.Clamp(CurrentIndicatorIndex, 0, int.MaxValue)].Name = value;
+                _screenDataModel.GetIndicatorsAtScreenIndex(Math.Clamp(CurrentScreenIndex, 0, int.MaxValue))[Math.Clamp(CurrentIndicatorIndex, 0, int.MaxValue)].Name = value;
                 
             }
         }
@@ -69,12 +69,12 @@ namespace ECET230FinalMQTTViewerDesktop.ViewModels
         {
             get
             {
-                return _screenDataModel.IndicatorsAtScreenIndex(Math.Clamp(CurrentScreenIndex, 0, int.MaxValue))[Math.Clamp(CurrentIndicatorIndex, 0, int.MaxValue)].Topic;
+                return _screenDataModel.GetIndicatorsAtScreenIndex(Math.Clamp(CurrentScreenIndex, 0, int.MaxValue))[Math.Clamp(CurrentIndicatorIndex, 0, int.MaxValue)].Topic;
             }
             set
             {
 
-                _screenDataModel.IndicatorsAtScreenIndex(Math.Clamp(CurrentScreenIndex, 0, int.MaxValue))[Math.Clamp(CurrentIndicatorIndex, 0, int.MaxValue)].Topic = value;
+                _screenDataModel.GetIndicatorsAtScreenIndex(Math.Clamp(CurrentScreenIndex, 0, int.MaxValue))[Math.Clamp(CurrentIndicatorIndex, 0, int.MaxValue)].Topic = value;
             }
         }
 
@@ -82,12 +82,12 @@ namespace ECET230FinalMQTTViewerDesktop.ViewModels
         {
             get
             {
-                return _screenDataModel.IndicatorsAtScreenIndex(Math.Clamp(CurrentScreenIndex, 0, int.MaxValue))[Math.Clamp(CurrentIndicatorIndex, 0, int.MaxValue)].Type;
+                return _screenDataModel.GetIndicatorsAtScreenIndex(Math.Clamp(CurrentScreenIndex, 0, int.MaxValue))[Math.Clamp(CurrentIndicatorIndex, 0, int.MaxValue)].Type;
             }
             set
             {
 
-                _screenDataModel.IndicatorsAtScreenIndex(Math.Clamp(CurrentScreenIndex, 0, int.MaxValue))[Math.Clamp(CurrentIndicatorIndex, 0, int.MaxValue)].Type = value;
+                _screenDataModel.GetIndicatorsAtScreenIndex(Math.Clamp(CurrentScreenIndex, 0, int.MaxValue))[Math.Clamp(CurrentIndicatorIndex, 0, int.MaxValue)].Type = value;
             }
         }
 
@@ -95,11 +95,11 @@ namespace ECET230FinalMQTTViewerDesktop.ViewModels
         {
             get
             {
-                return _screenDataModel.IndicatorsAtScreenIndex(Math.Clamp(CurrentScreenIndex, 0, int.MaxValue))[Math.Clamp(CurrentIndicatorIndex, 0, int.MaxValue)].MaxValue;
+                return _screenDataModel.GetIndicatorsAtScreenIndex(Math.Clamp(CurrentScreenIndex, 0, int.MaxValue))[Math.Clamp(CurrentIndicatorIndex, 0, int.MaxValue)].MaxValue;
             }
             set
             {
-                _screenDataModel.IndicatorsAtScreenIndex(Math.Clamp(CurrentScreenIndex, 0, int.MaxValue))[Math.Clamp(CurrentIndicatorIndex, 0, int.MaxValue)].MaxValue = value;
+                _screenDataModel.GetIndicatorsAtScreenIndex(Math.Clamp(CurrentScreenIndex, 0, int.MaxValue))[Math.Clamp(CurrentIndicatorIndex, 0, int.MaxValue)].MaxValue = value;
             }
         }
 
@@ -107,11 +107,11 @@ namespace ECET230FinalMQTTViewerDesktop.ViewModels
         {
             get
             {
-                return _screenDataModel.IndicatorsAtScreenIndex(Math.Clamp(CurrentScreenIndex, 0, int.MaxValue))[Math.Clamp(CurrentIndicatorIndex, 0, int.MaxValue)].MinValue;
+                return _screenDataModel.GetIndicatorsAtScreenIndex(Math.Clamp(CurrentScreenIndex, 0, int.MaxValue))[Math.Clamp(CurrentIndicatorIndex, 0, int.MaxValue)].MinValue;
             }
             set
             {
-                 _screenDataModel.IndicatorsAtScreenIndex(Math.Clamp(CurrentScreenIndex, 0, int.MaxValue))[Math.Clamp(CurrentIndicatorIndex, 0, int.MaxValue)].MinValue = value;
+                 _screenDataModel.GetIndicatorsAtScreenIndex(Math.Clamp(CurrentScreenIndex, 0, int.MaxValue))[Math.Clamp(CurrentIndicatorIndex, 0, int.MaxValue)].MinValue = value;
             }
         }
 
@@ -253,6 +253,40 @@ namespace ECET230FinalMQTTViewerDesktop.ViewModels
         void RequestScreenData()
         {
             _screenDataModel.RequestScreenDataFromDevice();
+        }
+
+        [RelayCommand]
+        void AddIndicator()
+        {
+            _screenDataModel.SetIndicatorsAtScreenIndex(CurrentScreenIndex, _screenDataModel
+                            .GetIndicatorsAtScreenIndex(CurrentScreenIndex)
+                            .Append(new IndicatorData("New Indicator", "New Indicator", "New Indicator", "numeric", 100, 0))
+                            .ToArray());
+            OnPropertyChanged(nameof(CurrentScreenIndicatorNames));
+        }
+
+        [RelayCommand]
+        void RemoveIndicator()
+        {
+            List<IndicatorData> indicators = _screenDataModel.GetIndicatorsAtScreenIndex(CurrentScreenIndex)
+                                                             .ToList<IndicatorData>();
+            indicators.RemoveAt(CurrentIndicatorIndex);
+            _screenDataModel.SetIndicatorsAtScreenIndex(CurrentScreenIndex, indicators.ToArray());
+            OnPropertyChanged(nameof(CurrentScreenIndicatorNames));
+        }
+
+        [RelayCommand]
+        void AddScreen()
+        {
+            _screenDataModel.AddScreen();
+            OnPropertyChanged(nameof(ScreenNames));
+        }
+
+        [RelayCommand]
+        void RemoveScreen()
+        {
+            _screenDataModel.RemoveScreen(CurrentScreenIndex);
+            OnPropertyChanged(nameof(ScreenNames));
         }
     }
 }

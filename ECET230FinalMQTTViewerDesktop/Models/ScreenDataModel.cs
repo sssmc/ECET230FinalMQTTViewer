@@ -6,7 +6,7 @@ namespace ECET230FinalMQTTViewerDesktop.Models
 {
     public partial class ScreenDataModel
     {
-        private ScreenData _screenData;
+        public ScreenData _screenData { get; set;}
 
         private int _currentScreen;
 
@@ -73,7 +73,7 @@ namespace ECET230FinalMQTTViewerDesktop.Models
             }
         }
 
-        public IndicatorData[] IndicatorsAtScreenIndex(int index)
+        public IndicatorData[] GetIndicatorsAtScreenIndex(int index)
         {
             if(index == -1)
             {
@@ -83,6 +83,49 @@ namespace ECET230FinalMQTTViewerDesktop.Models
                 return _screenData.Indicators[index];
             }
             else { return null; }
+        }
+
+        public void SetIndicatorsAtScreenIndex(int index, IndicatorData[] indicators)
+        {
+            if(index < _screenData.Indicators.GetLength(0))
+            {
+                _screenData.Indicators[index] = indicators;
+            }
+        }
+
+        public void AddScreen()
+        {
+            IndicatorData[][] newIndicators = new IndicatorData[_screenData.Indicators.GetLength(0) + 1][];
+
+            for(int i = 0; i < _screenData.Indicators.GetLength(0); i++)
+            {
+                newIndicators[i] = _screenData.Indicators[i];
+            }
+
+            IndicatorData newIndicator = new IndicatorData("New Indicator", "", "", "numeric", 100, 0);
+
+            newIndicators[_screenData.Indicators.GetLength(0)] = new IndicatorData[] { newIndicator };
+
+            _screenData.Indicators = newIndicators;
+        }
+        public void RemoveScreen(int index) 
+        {
+            if(index < _screenData.Indicators.GetLength(0))
+            {
+                IndicatorData[][] newIndicators = new IndicatorData[_screenData.Indicators.GetLength(0) - 1][];
+
+                for(int i = 0; i < index; i++)
+                {
+                    newIndicators[i] = _screenData.Indicators[i];
+                }
+
+                for(int i = index + 1; i < _screenData.Indicators.GetLength(0); i++)
+                {
+                    newIndicators[i - 1] = _screenData.Indicators[i];
+                }
+
+                _screenData.Indicators = newIndicators;
+            }
         }
 
         public bool SetScreenData(string rawData)
