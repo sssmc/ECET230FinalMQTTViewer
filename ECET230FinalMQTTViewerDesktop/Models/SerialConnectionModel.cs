@@ -25,7 +25,11 @@ namespace ECET230FinalMQTTViewerDesktop.Models
             }
             set
             {
-                _serialPort.BaudRate = value;
+                if(!_serialPort.IsOpen)
+                {
+                    _serialPort.BaudRate = value;
+                }    
+                
             }
         }
 
@@ -37,7 +41,11 @@ namespace ECET230FinalMQTTViewerDesktop.Models
             }
             set
             {
-                _serialPort.PortName = value;
+                if(!_serialPort.IsOpen)
+                {
+                    _serialPort.PortName = value;
+                }
+                
             }
         }
 
