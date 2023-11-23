@@ -199,7 +199,8 @@ namespace ECET230FinalMQTTViewerDesktop.ViewModels
             }
         }
 
-        public List<IndicatorGroup> IndicatorGroups { get; private set; } = new List<IndicatorGroup>();
+        public List<IndicatorGroup> IndicatorGroups { get; set; } = new List<IndicatorGroup>();
+
 
         public ScreenEditViewModel()
         {
@@ -226,10 +227,15 @@ namespace ECET230FinalMQTTViewerDesktop.ViewModels
             OnPropertyChanged(nameof(MQTTBrokerPassword));
             OnPropertyChanged(nameof(MQTTClientID));
 
+            
+            IndicatorGroups.Clear();
             for(int i = 0; i < _screenDataModel.ScreenCount; i++)
             {
-                IndicatorGroups.Add(new IndicatorGroup($"Screen {i + 1}", _screenDataModel.GetIndicatorsAtScreenIndex(i).ToList<IndicatorData>()));
+                IndicatorGroups.Add(new IndicatorGroup($"Screen {i + 1}", _screenDataModel.GetIndicatorsAtScreenIndex(i).ToList()));
             }
+
+            OnPropertyChanged(nameof(IndicatorGroups));
+            
 
         }
 

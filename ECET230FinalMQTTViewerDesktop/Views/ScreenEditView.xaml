@@ -156,6 +156,37 @@
                 </HorizontalStackLayout>
 
             </VerticalStackLayout>
+            <VerticalStackLayout>
+                <Label Text="Indicators"
+                   FontSize="Medium"
+                   Margin="20"/>
+                <ListView
+                    Margin="20"
+                    ItemsSource="{Binding IndicatorGroups}"
+                    IsGroupingEnabled="True">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <Label Text="Item"
+                                       BackgroundColor="LightGray"
+                                       FontSize="18"
+                                       FontAttributes="Bold" />
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                    <ListView.GroupHeaderTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <Label Text="{Binding Name}"
+                       BackgroundColor="LightGray"
+                       FontSize="18"
+                       FontAttributes="Bold" />
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.GroupHeaderTemplate>
+                </ListView>
+            </VerticalStackLayout>
+            
         </HorizontalStackLayout>
     </VerticalStackLayout>
 </ContentPage>
