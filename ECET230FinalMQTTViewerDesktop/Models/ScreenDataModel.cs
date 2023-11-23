@@ -20,7 +20,7 @@ namespace ECET230FinalMQTTViewerDesktop.Models
 
         private SerialConnectionModel _serialConnectionModel { get; set; }
 
-        
+        public EventHandler ScreenDataUpdated { get; set; }
 
         public ScreenDataModel()
         {
@@ -52,7 +52,15 @@ namespace ECET230FinalMQTTViewerDesktop.Models
             _screenData = defaultScreenData;
             _serialConnectionModel = App.dataSerialConnection;
 
+            _serialConnectionModel.DataReceived += _serialConnectionModel_DataReceived;
+
         }
+
+        private void _serialConnectionModel_DataReceived(object sender, DataReceivedEventArgs e)
+        {
+            SetScreenData(e.data);
+        }
+
         public IndicatorData[] IndicatorsAtScreenIndex(int index)
         {
             if(index == -1)
@@ -81,6 +89,7 @@ namespace ECET230FinalMQTTViewerDesktop.Models
                         if (ChecksumCalculator.ChecksumCalculator.CalculateChecksum(jsonPayload).ToString("0000") == checksum)
                         {
                             _screenData = JsonSerializer.Deserialize<ScreenData>(jsonPayload);
+                            ScreenDataUpdated?.Invoke(this, new System.EventArgs());
                             return true;
                         }
                         else { return false; }
@@ -89,7 +98,7 @@ namespace ECET230FinalMQTTViewerDesktop.Models
                 }
                 else if(rawData.Substring(2, 1) == "1")
                 {
-                    RequestScreenDataFromDevice();
+                    SendScreenDataToDevice();
                     return true;
                 }
                 else { return false; }
@@ -111,6 +120,8 @@ namespace ECET230FinalMQTTViewerDesktop.Models
             string packet = "##100000000";
             _serialConnectionModel.WriteLine(packet);
         }
+
+
 
 
     }

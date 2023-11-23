@@ -87,7 +87,10 @@ namespace ECET230FinalMQTTViewerDesktop.Models
         }
         public void WriteLine(string data)
         {
-            _serialPort.WriteLine(data);
+            if(_serialPort.IsOpen) {
+                _serialPort.WriteLine(data);
+            }
+            
         }
     }
 

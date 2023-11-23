@@ -168,8 +168,20 @@ namespace ECET230FinalMQTTViewerDesktop.ViewModels
 
         public ScreenEditViewModel()
         {
-            _screenDataModel = new ScreenDataModel();
+            _screenDataModel = App.screenDataModel;
             _currentScreenIndex = 0;
+            _screenDataModel.RequestScreenDataFromDevice();
+            _screenDataModel.ScreenDataUpdated += _screenDataModel_ScreenDataUpdated;
+        }
+
+        private void _screenDataModel_ScreenDataUpdated(object sender, EventArgs e)
+        {
+            OnPropertyChanged(nameof(CurrentIndicatorName));
+            OnPropertyChanged(nameof(CurrentIndicatorTopic));
+            OnPropertyChanged(nameof(CurrentIndicatorType));
+            OnPropertyChanged(nameof(CurrentIndicatorMax));
+            OnPropertyChanged(nameof(CurrentIndicatorMin));
+            OnPropertyChanged(nameof(CurrentScreenIndicatorNames));
         }
 
         partial void OnCurrentScreenIndexChanged(int oldValue, int newValue)
