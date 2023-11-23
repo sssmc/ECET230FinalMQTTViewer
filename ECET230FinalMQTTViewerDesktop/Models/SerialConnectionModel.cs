@@ -75,8 +75,15 @@ namespace ECET230FinalMQTTViewerDesktop.Models
         private void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             DataReceivedEventArgs args = new DataReceivedEventArgs();
-            args.data = _serialPort.ReadLine();
-            DataReceived?.Invoke(this, args);
+            try { 
+                args.data = _serialPort.ReadLine();
+                DataReceived?.Invoke(this, args);
+            }
+            catch(System.OperationCanceledException) {
+                //Serial port was closed while reading
+            }
+            
+            
         }
 
         public void OpenComPort()

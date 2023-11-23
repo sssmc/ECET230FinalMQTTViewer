@@ -83,10 +83,15 @@
                         SelectedIndex="{Binding CurrentIndicatorIndex}"
                         />
                 <Button
-                        Text="Program"
+                        Text="Program to Device"
                         FontSize="Medium"
                         Margin="20"
                         Command="{Binding ProgramScreenDataCommand}"/>
+                <Button
+                        Text="Download from Device"
+                        FontSize="Medium"
+                        Margin="20"
+                        Command="{Binding RequestScreenDataCommand}"/>
                 <Label
                     Text="Program Status"
                     Margin="20"/>

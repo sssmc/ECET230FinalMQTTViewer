@@ -56,12 +56,14 @@
                     FontSize="Medium"
                     HorizontalOptions="Center"/>
             <ScrollView>
-                <Label
+                <StackLayout>
+                    <Label
                     Text="{Binding DebugPortReceivedData}"
                     FontSize="14"
                     HorizontalOptions="Center"
                     VerticalOptions="StartAndExpand"
                     MaximumHeightRequest="500"/>
+                </StackLayout>
             </ScrollView>
 
             </VerticalStackLayout>
