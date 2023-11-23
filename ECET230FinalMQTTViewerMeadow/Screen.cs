@@ -5,6 +5,8 @@ using System.Text;
 using MQTTScreenData;
 
 using Meadow.Foundation.Graphics;
+using Meadow.Hardware;
+using MQTTnet.Client;
 
 namespace ECET230FinalMQTTViewerMeadow
 {
@@ -20,7 +22,16 @@ namespace ECET230FinalMQTTViewerMeadow
 
         public bool displayAlert { get; set; }
 
-        public string alertText { get; set;}
+        public string alertText { get; set; }
+
+        public string wifiStatusText { get; set; }
+
+        public string mqttStatusText { get; set; }
+
+
+        private IFont smallFont = new Font8x12();
+
+        private IFont mediumFont = new Font12x16();
 
         public Screen(ScreenData screenData, MicroGraphics graphics)
         {
@@ -46,6 +57,8 @@ namespace ECET230FinalMQTTViewerMeadow
             }
             else
             {
+                //Draw Indicators
+                graphics.CurrentFont = mediumFont;
                 for (int i = 0; i < screenData.Indicators[currentScreen].Length; i++)
                 {
                     if (indicatorValues[currentScreen][i] != null)
@@ -57,6 +70,10 @@ namespace ECET230FinalMQTTViewerMeadow
                         graphics.DrawText(5, i * 30, $"{screenData.Indicators[currentScreen][i].Name}: ----");
                     }
                 }
+                //Draw WiFi and MQTT connection status
+                graphics.CurrentFont = smallFont;
+                graphics.DrawText(5, 210, $"{wifiStatusText}");
+                graphics.DrawText(5, 230, $"{mqttStatusText}");
             }
 
             

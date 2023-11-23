@@ -124,7 +124,7 @@ namespace ECET230FinalMQTTViewerMeadow
         indicators[1] = new IndicatorData[] { random1Indicator, random2Indicator, tempIndicator, humIndicator };
         indicators[2] = new IndicatorData[] { random2Indicator, random1Indicator};
 
-            ScreenData defaultScreenData = new ScreenData(testConnection, indicators);
+        ScreenData defaultScreenData = new ScreenData(testConnection, indicators);
 
         //File loading
 
@@ -192,6 +192,11 @@ namespace ECET230FinalMQTTViewerMeadow
 
         //Create Screen object
         screen = new Screen(screenData, graphics);
+
+        screen.mqttStatusText = "MQTT waiting for WiFi";
+
+        screen.wifiStatusText = "Connecting to WiFi";
+
 
         screen.drawScreen();
 
@@ -324,14 +329,18 @@ namespace ECET230FinalMQTTViewerMeadow
                     Console.WriteLine("Updating Screen...");
                     ScreenData newScreenData = new ScreenData();
                     newScreenData = JsonSerializer.Deserialize<ScreenData>(payload);
+                    string oldWifiStatus = screen.wifiStatusText;
 
                     screen = new Screen(newScreenData, graphics);
+
+                    screen.wifiStatusText = oldWifiStatus;
 
                     screen.drawScreen();
                     Console.WriteLine("Screen Updated");
                     Console.WriteLine("Writing data to file...");
 
-                    try {
+                    try
+                    {
                         using (var fs = File.CreateText(Path.Combine(dataFilePath, dataFileName)))
                         {
                             fs.WriteLine(JsonSerializer.Serialize(newScreenData));
@@ -346,7 +355,7 @@ namespace ECET230FinalMQTTViewerMeadow
 
 
                     //Restart the meadow board if the wifi connnecting info has changed
-                    if(client == null || newScreenData.Connection.WifiSSID != screenData.Connection.WifiSSID || newScreenData.Connection.WifiPassword != screenData.Connection.WifiPassword)
+                    if (client == null || newScreenData.Connection.WifiSSID != screenData.Connection.WifiSSID || newScreenData.Connection.WifiPassword != screenData.Connection.WifiPassword)
                     {
                         Console.WriteLine("Wifi Info Changed, Restarting...");
                         //Disconnect from Wifi
@@ -363,8 +372,6 @@ namespace ECET230FinalMQTTViewerMeadow
                         screen.drawScreen();
                     }
 
-                    
-
                 }
                 else
                 {
@@ -377,8 +384,6 @@ namespace ECET230FinalMQTTViewerMeadow
                     screen.drawScreen();
                     return;
                 }
-
-                
             }
             else
             {
@@ -436,6 +441,8 @@ namespace ECET230FinalMQTTViewerMeadow
         {
             //Connect to Wifi
             Resolver.Log.Info($"Connecting to Wifi SSID: {screen.screenData.Connection.WifiSSID}");
+            screen.wifiStatusText = "Connecting to WiFi";
+            screen.drawScreen();
 
             try
             {
@@ -446,11 +453,15 @@ namespace ECET230FinalMQTTViewerMeadow
             catch (Exception ex)
             {
                 Resolver.Log.Error($"Failed to Connect to Wifi: : {ex.Message}");
+                screen.wifiStatusText = "Failed to Connect to WiFi";
+                screen.drawScreen();
             }
         }
         private void Wifi_NetworkConnected(INetworkAdapter networkAdapter, NetworkConnectionEventArgs args)
         {
-          
+
+            screen.wifiStatusText = "Connected to WiFi";
+            screen.drawScreen();
             Console.WriteLine("Connected to Wifi with:");
             Console.WriteLine($"IP Address: {networkAdapter.IpAddress}.");
             Console.WriteLine($"Subnet mask: {networkAdapter.SubnetMask}");
@@ -462,6 +473,8 @@ namespace ECET230FinalMQTTViewerMeadow
         private async Task MQTT_Connect(ConnectionData connection)
         {
             Console.WriteLine("Connecting to MQTT server...");
+            screen.mqttStatusText = "Connecting to MQTT";
+            screen.drawScreen();
 
             MqttFactory mqttFactory = new MqttFactory();
             MqttClientOptions mqttClientOptions = (MqttClientOptions)new MqttClientOptionsBuilder()
@@ -497,6 +510,9 @@ namespace ECET230FinalMQTTViewerMeadow
         {
             Console.WriteLine("Connected to MQTT server");
 
+            screen.mqttStatusText = "Connected to MQTT";
+            screen.drawScreen();
+
             List<MqttTopicFilter> topicFilters = new List<MqttTopicFilter>();
             List<string> topicsSubscribed = new List<string>();
 
@@ -527,6 +543,8 @@ namespace ECET230FinalMQTTViewerMeadow
         private async Task Client_DisconnectedAsync(MqttClientDisconnectedEventArgs e)
         {
             Console.WriteLine("Disconnected from MQTT server");
+            screen.mqttStatusText = "Disconnected to MQTT";
+            screen.drawScreen();
             await Task.Delay(TimeSpan.FromSeconds(5));
             try
             {
