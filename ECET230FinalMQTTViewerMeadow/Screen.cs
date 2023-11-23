@@ -57,6 +57,7 @@ namespace ECET230FinalMQTTViewerMeadow
             }
             else
             {
+
                 //Draw Indicators
                 graphics.CurrentFont = mediumFont;
                 for (int i = 0; i < screenData.Indicators[currentScreen].Length; i++)
@@ -70,7 +71,7 @@ namespace ECET230FinalMQTTViewerMeadow
                         graphics.DrawText(5, i * 30, $"{screenData.Indicators[currentScreen][i].Name}: ----");
                     }
                 }
-                //Draw WiFi and MQTT connection status
+                //Draw WiFi and MQTT connection status in smaller font
                 graphics.CurrentFont = smallFont;
                 graphics.DrawText(5, 210, $"{wifiStatusText}");
                 graphics.DrawText(5, 230, $"{mqttStatusText}");

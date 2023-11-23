@@ -31,8 +31,6 @@ using MQTTnet.Client.Disconnecting;
 //Internal Libs
 using MQTTScreenData;
 using MQTTSConnectionData;
-using ChecksumCalculator;
-using System.Security.Cryptography.X509Certificates;
 
 namespace ECET230FinalMQTTViewerMeadow
 {
