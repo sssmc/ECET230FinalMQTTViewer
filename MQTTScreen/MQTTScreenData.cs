@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using CommunityToolkit.Mvvm.ComponentModel;
 using MQTTSConnectionData;
 
 namespace MQTTScreenData
@@ -31,8 +32,10 @@ namespace MQTTScreenData
 
     }
 
-    public class IndicatorData
+    public partial class IndicatorData : ObservableObject
     {
+
+        /*
         public string Name { get; set; }
         public string Description { get; set; }
 
@@ -44,6 +47,26 @@ namespace MQTTScreenData
 
         public int MinValue { get; set; }
 
+        */
+
+        [ObservableProperty]
+        private string _name;
+
+        [ObservableProperty]
+        private string _description;
+
+        [ObservableProperty]
+        private string _topic;
+
+        [ObservableProperty]
+        private string _type;
+
+        [ObservableProperty]
+        private int _maxValue;
+
+        [ObservableProperty]
+        private int _minValue;
+
         public IndicatorData(string name, string description, string topic, string type, int maxValue, int minValue)
         {
             Name = name;
@@ -52,6 +75,14 @@ namespace MQTTScreenData
             Type = type;
             MaxValue = maxValue;
             MinValue = minValue;
+        }
+
+        public IndicatorData()
+        {
+            Name = "";
+            Description = "";
+            Topic = "";
+            Type = "";
         }
 
         public string[] getValidTypes()

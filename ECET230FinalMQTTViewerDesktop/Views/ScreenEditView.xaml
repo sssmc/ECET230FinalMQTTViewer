@@ -160,31 +160,47 @@
                 <Label Text="Indicators"
                    FontSize="Medium"
                    Margin="20"/>
-                <ListView
+                <CollectionView
                     Margin="20"
-                    ItemsSource="{Binding IndicatorGroups}"
-                    IsGroupingEnabled="True">
-                    <ListView.ItemTemplate>
+                    ItemsSource="{Binding CurrentScreenIndicators}"
+                    >
+                    <CollectionView.ItemTemplate>
                         <DataTemplate>
-                            <ViewCell>
-                                <Label Text="Item"
-                                       BackgroundColor="LightGray"
-                                       FontSize="18"
-                                       FontAttributes="Bold" />
-                            </ViewCell>
+                            <Label Text="{Binding Name}"/>
                         </DataTemplate>
-                    </ListView.ItemTemplate>
-                    <ListView.GroupHeaderTemplate>
-                        <DataTemplate>
-                            <ViewCell>
-                                <Label Text="{Binding Name}"
-                       BackgroundColor="LightGray"
-                       FontSize="18"
-                       FontAttributes="Bold" />
-                            </ViewCell>
-                        </DataTemplate>
-                    </ListView.GroupHeaderTemplate>
-                </ListView>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <Grid>
+                    <CollectionView 
+                                    IsGrouped="true"
+                                    x:Name="collection">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Padding="10">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <Label Grid.Column="1"
+                                           Text="{Binding Name}"
+                                           FontAttributes="Bold" />
+                                    <Label Grid.Row="1"
+                                           Grid.Column="1"
+                                           Text="{Binding Type}"
+                                           FontAttributes="Italic"
+                                           VerticalOptions="End" />
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Grid>
+
+                
             </VerticalStackLayout>
             
         </HorizontalStackLayout>

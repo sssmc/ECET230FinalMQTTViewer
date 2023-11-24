@@ -35,7 +35,7 @@ namespace ECET230FinalMQTTViewerDesktop.Models
                                             "IoT-Security",
                                             "B@kery204!");
 
-            IndicatorData tempIndicator = new IndicatorData("Temperature", "Temperature", "channels/2328115/subscribe/fields/field1", "numeric", 100, 0);
+            IndicatorData tempIndicator = new IndicatorData("Temperature!!", "Temperature", "channels/2328115/subscribe/fields/field1", "numeric", 100, 0);
             IndicatorData humIndicator = new IndicatorData("Humidity", "Humidity", "channels/2328115/subscribe/fields/field2", "numeric", 100, 0);
 
             IndicatorData random1Indicator = new IndicatorData("Random1", "Random1", "channels/2328115/subscribe/fields/field3", "numeric", 10, 0);

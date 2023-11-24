@@ -4,10 +4,12 @@ using ECET230FinalMQTTViewerDesktop.Models;
 using MQTTScreenData;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static ECET230FinalMQTTViewerDesktop.ViewModels.ScreenEditViewModel;
 
 namespace ECET230FinalMQTTViewerDesktop.ViewModels
 {
@@ -25,7 +27,7 @@ namespace ECET230FinalMQTTViewerDesktop.ViewModels
         [ObservableProperty]
         private int _currentIndicatorIndex;
 
-        public string [] ScreenNames
+        public string[] ScreenNames
         {
             get
             {
@@ -43,7 +45,7 @@ namespace ECET230FinalMQTTViewerDesktop.ViewModels
             get
             {
                 string[] indicatorNames = new string[_screenDataModel.GetIndicatorsAtScreenIndex(CurrentScreenIndex).Length];
-                for(int i = 0; i < _screenDataModel.GetIndicatorsAtScreenIndex(CurrentScreenIndex).Length; i++)
+                for (int i = 0; i < _screenDataModel.GetIndicatorsAtScreenIndex(CurrentScreenIndex).Length; i++)
                 {
                     indicatorNames[i] = _screenDataModel.GetIndicatorsAtScreenIndex(CurrentScreenIndex)[i].Name;
                 }
@@ -61,7 +63,7 @@ namespace ECET230FinalMQTTViewerDesktop.ViewModels
             {
 
                 _screenDataModel.GetIndicatorsAtScreenIndex(Math.Clamp(CurrentScreenIndex, 0, int.MaxValue))[Math.Clamp(CurrentIndicatorIndex, 0, int.MaxValue)].Name = value;
-                
+
             }
         }
 
@@ -111,7 +113,7 @@ namespace ECET230FinalMQTTViewerDesktop.ViewModels
             }
             set
             {
-                 _screenDataModel.GetIndicatorsAtScreenIndex(Math.Clamp(CurrentScreenIndex, 0, int.MaxValue))[Math.Clamp(CurrentIndicatorIndex, 0, int.MaxValue)].MinValue = value;
+                _screenDataModel.GetIndicatorsAtScreenIndex(Math.Clamp(CurrentScreenIndex, 0, int.MaxValue))[Math.Clamp(CurrentIndicatorIndex, 0, int.MaxValue)].MinValue = value;
             }
         }
 
@@ -199,7 +201,17 @@ namespace ECET230FinalMQTTViewerDesktop.ViewModels
             }
         }
 
-        public List<IndicatorGroup> IndicatorGroups { get; set; } = new List<IndicatorGroup>();
+        public List<IndicatorData> CurrentScreenIndicators
+        {
+            get
+            {
+                return _screenDataModel.GetIndicatorsAtScreenIndex(CurrentScreenIndex).ToList();
+            }
+        }
+
+        [ObservableProperty]
+        private List<IndicatorGroup> _indicatorGroups = new List<IndicatorGroup>();
+
 
 
         public ScreenEditViewModel()
@@ -208,7 +220,11 @@ namespace ECET230FinalMQTTViewerDesktop.ViewModels
             _currentScreenIndex = 0;
             _screenDataModel.ScreenDataUpdated += _screenDataModel_ScreenDataUpdated;
             _screenDataModel.RequestScreenDataFromDevice();
-    }
+
+            IndicatorGroups.Add(new IndicatorGroup("Screen 1", new ObservableCollection<IndicatorData>(_screenDataModel.GetIndicatorsAtScreenIndex(0).ToList())));
+            IndicatorGroups.Add(new IndicatorGroup("Screen 1", new ObservableCollection<IndicatorData>(_screenDataModel.GetIndicatorsAtScreenIndex(1).ToList())));
+
+        }
 
         private void _screenDataModel_ScreenDataUpdated(object sender, EventArgs e)
         {
@@ -227,23 +243,20 @@ namespace ECET230FinalMQTTViewerDesktop.ViewModels
             OnPropertyChanged(nameof(MQTTBrokerPassword));
             OnPropertyChanged(nameof(MQTTClientID));
 
-            
-            IndicatorGroups.Clear();
-            for(int i = 0; i < _screenDataModel.ScreenCount; i++)
-            {
-                IndicatorGroups.Add(new IndicatorGroup($"Screen {i + 1}", _screenDataModel.GetIndicatorsAtScreenIndex(i).ToList()));
-            }
 
-            OnPropertyChanged(nameof(IndicatorGroups));
-            
+            IndicatorGroups = new List<IndicatorGroup>();
+
+            IndicatorGroups.Add(new IndicatorGroup("Screen 1", new ObservableCollection<IndicatorData>(_screenDataModel.GetIndicatorsAtScreenIndex(0).ToList())));
+            IndicatorGroups.Add(new IndicatorGroup("Screen 1", new ObservableCollection<IndicatorData>(_screenDataModel.GetIndicatorsAtScreenIndex(1).ToList())));
 
         }
 
         partial void OnCurrentScreenIndexChanged(int oldValue, int newValue)
         {
             OnPropertyChanged(nameof(CurrentScreenIndicatorNames));
+            OnPropertyChanged(nameof(CurrentScreenIndicators));
             CurrentIndicatorIndex = 0;
-            
+
         }
 
         partial void OnCurrentIndicatorIndexChanged(int oldValue, int newValue)
@@ -301,11 +314,17 @@ namespace ECET230FinalMQTTViewerDesktop.ViewModels
             OnPropertyChanged(nameof(ScreenNames));
         }
 
-        public class IndicatorGroup : List<IndicatorData>
+        public class ScreenCollectionItem
+        {
+            public string Name { get; set; }
+        }
+
+        
+        public partial class IndicatorGroup : ObservableCollection<IndicatorData>
         {
             public string Name { get; private set; }
 
-            public IndicatorGroup(string name, List<IndicatorData> indicators) : base(indicators)
+            public IndicatorGroup(string name, ObservableCollection<IndicatorData> animals) : base(animals)
             {
                 Name = name;
             }
