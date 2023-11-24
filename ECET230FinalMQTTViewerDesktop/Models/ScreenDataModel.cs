@@ -73,6 +73,18 @@ namespace ECET230FinalMQTTViewerDesktop.Models
             }
         }
 
+        public IndicatorData[][] Indicators
+        {
+            get
+            {
+                return _screenData.Indicators;
+            }
+            set
+            {
+                _screenData.Indicators = value;
+            }
+        }
+
         public IndicatorData[] GetIndicatorsAtScreenIndex(int index)
         {
             if(index == -1)
@@ -81,6 +93,19 @@ namespace ECET230FinalMQTTViewerDesktop.Models
             }else if (index < _screenData.Indicators.GetLength(0))
             {
                 return _screenData.Indicators[index];
+            }
+            else { return null; }
+        }
+
+        public List<IndicatorData> GetIndicatorsAtScreenIndexAsList(int index)
+        {
+            if (index == -1)
+            {
+                return new List<IndicatorData>();
+            }
+            else if (index < _screenData.Indicators.GetLength(0))
+            {
+                return _screenData.Indicators[index].ToList();
             }
             else { return null; }
         }

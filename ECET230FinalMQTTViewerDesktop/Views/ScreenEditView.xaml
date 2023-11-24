@@ -62,17 +62,34 @@
                            Margin="20"/>
                     <Entry Text="{Binding MQTTBrokerPassword}"/>
                 </HorizontalStackLayout>
+                <HorizontalStackLayout>
+                    <Button
+                        Text="Program to Device"
+                        FontSize="Medium"
+                        Margin="20"
+                        Command="{Binding ProgramScreenDataCommand}"/>
+                    <Button
+                        Text="Download from Device"
+                        FontSize="Medium"
+                        Margin="20"
+                        Command="{Binding RequestScreenDataCommand}"/>
+                    <Label
+                        Text="Program Status"
+                        Margin="20"/>
+                </HorizontalStackLayout>
             </VerticalStackLayout>
             <VerticalStackLayout>
-                <Label Text="Screens"
+                <HorizontalStackLayout>
+
+
+                    <Label Text="Screens"
                        Margin="20"
                        FontSize="Medium"/>
-                <Picker
+                    <Picker
                         Margin="20"
                         FontSize="Medium"
                         ItemsSource="{Binding ScreenNames}"
                         SelectedIndex="{Binding CurrentScreenIndex}"/>
-                <HorizontalStackLayout>
                     <Button
                         Text="Add Screen"
                         FontSize="Medium"
@@ -84,16 +101,49 @@
                         Margin="20"
                         Command="{Binding RemoveScreenCommand}"/>
                 </HorizontalStackLayout>
-                <Label 
-                        Text="Indicators"
-                        FontSize="Medium"
-                        Margin="20"/>
-                <Picker
+                <VerticalStackLayout>
+                    
+                    <CollectionView
                         Margin="20"
-                        FontSize="Medium"
-                        ItemsSource="{Binding CurrentScreenIndicatorNames}"
-                        SelectedIndex="{Binding CurrentIndicatorIndex}"
-                        />
+                        ItemsSource="{Binding CurrentScreenIndicators}"
+                        SelectionMode="Single"
+                        SelectedItem="{Binding SelectedIndicator}">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid
+                                    ColumnSpacing="15">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="125"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="250"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Label
+                                        Grid.Column="0"
+                                        Text="Name:"
+                                        FontAttributes="Bold"
+                                        VerticalOptions="Center"/>
+                                    <Entry
+                                        Text="{Binding Name}"
+                                        Grid.Column="1"
+                                        VerticalOptions="Center"/>
+                                    <Label
+                                        Grid.Column="2"
+                                        Text="Topic:" 
+                                        VerticalOptions="Center"/>
+                                    <Entry
+                                        Grid.Column="3"
+                                        Text="{Binding Topic}"/>
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                        <CollectionView.ItemsLayout>
+                            <LinearItemsLayout Orientation="Vertical"
+                                                ItemSpacing="10" />
+                        </CollectionView.ItemsLayout>
+                        
+                    </CollectionView>
+                </VerticalStackLayout>
                 <HorizontalStackLayout>
                     <Button
                         Text="Add Indicator"
@@ -106,103 +156,10 @@
                         Margin="20"
                         Command="{Binding RemoveIndicatorCommand}"/>
                 </HorizontalStackLayout>
-                <Button
-                        Text="Program to Device"
-                        FontSize="Medium"
-                        Margin="20"
-                        Command="{Binding ProgramScreenDataCommand}"/>
-                <Button
-                        Text="Download from Device"
-                        FontSize="Medium"
-                        Margin="20"
-                        Command="{Binding RequestScreenDataCommand}"/>
-                <Label
-                    Text="Program Status"
-                    Margin="20"/>
-            </VerticalStackLayout>
-            <VerticalStackLayout>
-                <Label Text="Indicator"
-                       Margin="20"
-                       FontSize="Medium"/>
-                <HorizontalStackLayout>
-                    <Label Text="Name:"
-                           FontSize="Medium"
-                           Margin="20"/>
-                    <Entry Text="{Binding CurrentIndicatorName}"
-                           Margin="20"/>
-                </HorizontalStackLayout>
-                <HorizontalStackLayout>
-                    <Label Text="Type:"
-                           FontSize="Medium"
-                           Margin="20"/>
-                    <Picker
-                        Margin="20"
-                        FontSize="Medium"
-                        />
-                </HorizontalStackLayout>
-                <HorizontalStackLayout>
-                    <Label 
-                        Text="Topic:"
-                        FontSize="Medium"
-                        Margin="20"/>
-                    <Entry Text="{Binding CurrentIndicatorTopic}"/>
-                    
-                </HorizontalStackLayout>
-                <HorizontalStackLayout>
-                    <Label 
-                        Text="Min"
-                        FontSize="Medium"
-                        Margin="20"/>
-                </HorizontalStackLayout>
-
-            </VerticalStackLayout>
-            <VerticalStackLayout>
-                <Label Text="Indicators"
-                   FontSize="Medium"
-                   Margin="20"/>
-                <CollectionView
-                    Margin="20"
-                    ItemsSource="{Binding CurrentScreenIndicators}"
-                    >
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate>
-                            <Label Text="{Binding Name}"/>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-
-                <Grid>
-                    <CollectionView 
-                                    IsGrouped="true"
-                                    x:Name="collection">
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate>
-                                <Grid Padding="10">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                    </Grid.RowDefinitions>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
-                                    <Label Grid.Column="1"
-                                           Text="{Binding Name}"
-                                           FontAttributes="Bold" />
-                                    <Label Grid.Row="1"
-                                           Grid.Column="1"
-                                           Text="{Binding Type}"
-                                           FontAttributes="Italic"
-                                           VerticalOptions="End" />
-                                </Grid>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
-                </Grid>
-
-                
             </VerticalStackLayout>
             
+            
         </HorizontalStackLayout>
+        
     </VerticalStackLayout>
 </ContentPage>
