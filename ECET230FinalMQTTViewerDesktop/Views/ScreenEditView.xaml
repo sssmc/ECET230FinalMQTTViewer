@@ -21,13 +21,13 @@
                     <Label Text="SSID:"
                            FontSize="Medium"
                            Margin="20"/>
-                    <Entry Text="{Binding WiFiSSID}"/>
+                    <Entry Text="{Binding ScreenDataModel.Connection.WifiSSID}"/>
                 </HorizontalStackLayout>
                 <HorizontalStackLayout>
                     <Label Text="Password:"
                            FontSize="Medium"
                            Margin="20"/>
-                    <Entry Text="{Binding WiFiPassword}"/>
+                    <Entry Text="{Binding ScreenDataModel.Connection.WifiPassword}"/>
                 </HorizontalStackLayout>
                 <Label Text="MQTT Connection"
                        FontSize="Medium"
@@ -36,31 +36,31 @@
                     <Label Text="Broker:"
                            FontSize="Medium"
                            Margin="20"/>
-                    <Entry Text="{Binding MQTTBrokerAddress}"/>
+                    <Entry Text="{Binding ScreenDataModel.Connection.MQTTHost}"/>
                 </HorizontalStackLayout>
                 <HorizontalStackLayout>
                     <Label Text="Port:"
                            FontSize="Medium"
                            Margin="20"/>
-                    <Entry Text="{Binding MQTTBrokerPort}"/>
+                    <Entry Text="{Binding ScreenDataModel.Connection.MQTTPort}"/>
                 </HorizontalStackLayout>
                 <HorizontalStackLayout>
                     <Label Text="Client ID:"
                            FontSize="Medium"
                            Margin="20"/>
-                    <Entry Text="{Binding MQTTClientID}"/>
+                    <Entry Text="{Binding ScreenDataModel.Connection.MQTTClientId}"/>
                 </HorizontalStackLayout>
                 <HorizontalStackLayout>
                     <Label Text="User Name:"
                            FontSize="Medium"
                            Margin="20"/>
-                    <Entry Text="{Binding MQTTBrokerUsername}"/>
+                    <Entry Text="{Binding ScreenDataModel.Connection.MQTTUsername}"/>
                 </HorizontalStackLayout>
                 <HorizontalStackLayout>
                     <Label Text="Password:"
                            FontSize="Medium"
                            Margin="20"/>
-                    <Entry Text="{Binding MQTTBrokerPassword}"/>
+                    <Entry Text="{Binding ScreenDataModel.Connection.MQTTPassword}"/>
                 </HorizontalStackLayout>
                 <HorizontalStackLayout>
                     <Button
@@ -80,8 +80,6 @@
             </VerticalStackLayout>
             <VerticalStackLayout>
                 <HorizontalStackLayout>
-
-
                     <Label Text="Screens"
                        Margin="20"
                        FontSize="Medium"/>
@@ -141,7 +139,6 @@
                             <LinearItemsLayout Orientation="Vertical"
                                                 ItemSpacing="10" />
                         </CollectionView.ItemsLayout>
-                        
                     </CollectionView>
                 </VerticalStackLayout>
                 <HorizontalStackLayout>
