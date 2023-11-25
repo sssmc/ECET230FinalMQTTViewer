@@ -66,6 +66,7 @@ namespace ECET230FinalMQTTViewerDesktop.ViewModels
         {    
             OnPropertyChanged(nameof(ScreenNames));
             OnPropertyChanged(nameof(CurrentScreenIndicators));
+            OnPropertyChanged(nameof(ScreenDataModel)); 
             CurrentScreenIndex = 0; 
             SelectedIndicator = null;
         }

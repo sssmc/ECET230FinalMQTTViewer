@@ -1,6 +1,7 @@
 ﻿using MQTTScreenData;
 using MQTTSConnectionData;
 using System.Text.Json;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ECET230FinalMQTTViewerDesktop.Models
 {
@@ -18,7 +19,7 @@ namespace ECET230FinalMQTTViewerDesktop.Models
             }
         }
 
-        private SerialConnectionModel _serialConnectionModel { get; set; }
+        private SerialConnectionModel _serialConnectionModel;
 
         public EventHandler ScreenDataUpdated { get; set; }
 

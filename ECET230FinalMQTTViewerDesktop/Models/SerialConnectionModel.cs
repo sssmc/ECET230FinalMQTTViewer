@@ -1,8 +1,9 @@
-﻿using System.IO.Ports;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System.IO.Ports;
 
 namespace ECET230FinalMQTTViewerDesktop.Models
 {
-    public class SerialConnectionModel
+    public partial class SerialConnectionModel : ObservableObject
     {
         private SerialPort _serialPort;
 
