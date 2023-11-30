@@ -8,8 +8,14 @@ namespace ECET230FinalMQTTViewerDesktop.Models
     {
         private SerialPort _serialPort;
 
+        [ObservableProperty]
         private bool _comPortIsOpen;
+
+        [ObservableProperty]
         private int _baudRate;
+
+        [ObservableProperty]
+        private string _connectionStatusText;
 
         public string[] comPortNames
         {
@@ -43,19 +49,11 @@ namespace ECET230FinalMQTTViewerDesktop.Models
             }
             set
             {
-                if(!_serialPort.IsOpen)
+                if(!_serialPort.IsOpen && value != null)
                 {
                     _serialPort.PortName = value;
                 }
                 
-            }
-        }
-
-        public bool comPortIsOpen
-        {
-            get
-            {
-                return _comPortIsOpen;
             }
         }
 
@@ -68,7 +66,8 @@ namespace ECET230FinalMQTTViewerDesktop.Models
         public SerialConnectionModel(bool useReadLine)
         {
             _serialPort = new SerialPort();
-            _comPortIsOpen = false;
+            ComPortIsOpen = false;
+            ConnectionStatusText = "Serial Port Not Connected";
             _baudRate = 4800;
             _serialPort.BaudRate = _baudRate;
             if (useReadLine)
@@ -84,7 +83,8 @@ namespace ECET230FinalMQTTViewerDesktop.Models
         public SerialConnectionModel()
         {
             _serialPort = new SerialPort();
-            _comPortIsOpen = false;
+            ComPortIsOpen = false;
+            ConnectionStatusText = "Serial Port Not Connected";
             _baudRate = 4800;
             _serialPort.BaudRate = _baudRate;
             _serialPort.DataReceived += SerialPort_DataReceivedReadLine;
@@ -95,11 +95,12 @@ namespace ECET230FinalMQTTViewerDesktop.Models
             DataReceivedEventArgs args = new DataReceivedEventArgs();
             try
             {
-
+                ConnectionStatusText = "Serial Port Receiving Data...";
                 byte[] buffer;
                 _serialPort.Read(buffer = new byte[_serialPort.BytesToRead], 0, _serialPort.BytesToRead);
                 args.data = Encoding.ASCII.GetString(buffer);
                 DataReceived?.Invoke(this, args);
+                ConnectionStatusText = "Serial Port Data Received";
             }
             catch
             {
@@ -110,9 +111,11 @@ namespace ECET230FinalMQTTViewerDesktop.Models
         private void SerialPort_DataReceivedReadLine(object sender, SerialDataReceivedEventArgs e)
         {
             DataReceivedEventArgs args = new DataReceivedEventArgs();
-            try { 
+            try {
+                ConnectionStatusText = "Serial Port Receiving Data...";
                 args.data = _serialPort.ReadLine();
                 DataReceived?.Invoke(this, args);
+                ConnectionStatusText = "Serial Port Data Received";
             }
             catch(System.OperationCanceledException) {
                 //Serial port was closed while reading
@@ -121,26 +124,52 @@ namespace ECET230FinalMQTTViewerDesktop.Models
             
         }
 
-        public void OpenComPort()
+        public bool OpenComPort()
         {
-            _serialPort.PortName = comPortName;
-            _serialPort.Open();
-            _comPortIsOpen = true;
-            ComPortOpened?.Invoke(this, new EventArgs());
+            try
+            {
+                _serialPort.Open();
+                ComPortIsOpen = true;
+                ConnectionStatusText = "Serial Port Connected";
+                ComPortOpened?.Invoke(this, new EventArgs());
+                return true;
+            }
+            catch
+            {
+                ComPortIsOpen = false;
+                ConnectionStatusText = "Error Opening Serial Port";
+                return false;
+            }
         }
 
-        public void CloseComPort()
+        public bool CloseComPort()
         {
             _serialPort.Close();
-            _comPortIsOpen = false;
+            ComPortIsOpen = false;
+            ConnectionStatusText = "Serial Port Not Connected";
             ComPortClosed?.Invoke(this, new EventArgs());
+            return true;
         }
         public void WriteLine(string data)
         {
-            if(_serialPort.IsOpen) {
-                _serialPort.WriteLine(data);
+            ConnectionStatusText = "Serial Port Sending Data...";
+            if (_serialPort.IsOpen) {
+                try
+                {
+                    _serialPort.WriteLine(data);
+                    ConnectionStatusText = "Serial Port Data Sent";
+                }
+                catch
+                {
+                    ConnectionStatusText = "Error Sending Data";
+                }
+            }
+            else
+            {
+                ConnectionStatusText = "Serial Port Not Connected";
             }
             
+
         }
     }
 

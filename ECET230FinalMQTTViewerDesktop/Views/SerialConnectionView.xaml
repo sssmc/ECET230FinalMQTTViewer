@@ -46,6 +46,11 @@
                     Margin="20"
                     />
         </HorizontalStackLayout>
+        <Label Text="{Binding DataSerialConnection.ConnectionStatusText}"
+               Grid.Column="0"
+                Grid.Row="2"
+                VerticalOptions="Center"
+                Margin="20"/>
         <Label
             Grid.Column="0"
             Grid.Row="3"

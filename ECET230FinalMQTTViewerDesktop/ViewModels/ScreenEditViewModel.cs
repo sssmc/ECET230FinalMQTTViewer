@@ -20,6 +20,9 @@ namespace ECET230FinalMQTTViewerDesktop.ViewModels
         [ObservableProperty]
         private IndicatorData _selectedIndicator;
 
+        [ObservableProperty]
+        private SerialConnectionModel _serialConnectionModel = App.dataSerialConnection;
+
         public string[] ScreenNames
         {
             get

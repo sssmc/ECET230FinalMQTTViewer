@@ -14,6 +14,12 @@ namespace ECET230FinalMQTTViewerDesktop.ViewModels
     public partial class SerialConnectionViewModel
     {
         [ObservableProperty]
+        private SerialConnectionModel _dataSerialConnection = App.dataSerialConnection;
+
+        [ObservableProperty]
+        private SerialConnectionModel _debugSerialConnection = App.debugSerialConnection;
+
+        [ObservableProperty]
         private string _dataPortOpenCloseButtonText = "Open";
 
         [ObservableProperty]
@@ -80,31 +86,55 @@ namespace ECET230FinalMQTTViewerDesktop.ViewModels
         [RelayCommand]
         void DebugPortOpenClose()
         {
-            if (App.debugSerialConnection.comPortIsOpen)
+            if (App.debugSerialConnection.ComPortIsOpen)
             {
-                App.debugSerialConnection.CloseComPort();
-                DebugPortOpenCloseButtonText = "Open";
+
+                if (App.debugSerialConnection.CloseComPort())
+                {
+                    DebugPortOpenCloseButtonText = "Open";
+                }else
+                {
+                    DebugPortOpenCloseButtonText = "Close";
+                }
+                
             }
             else
             {
-                App.debugSerialConnection.OpenComPort();
-                DebugPortOpenCloseButtonText = "Close";
+                if(App.debugSerialConnection.OpenComPort())
+                {
+                    DebugPortOpenCloseButtonText = "Close";
+                }else
+                {
+                    DebugPortOpenCloseButtonText = "Open";
+                }
             }
         }
 
         [RelayCommand]
         void DataPortOpenClose()
         {
-            if(App.dataSerialConnection.comPortIsOpen)
+            if(App.dataSerialConnection.ComPortIsOpen)
             {
-                App.dataSerialConnection.CloseComPort();
-                DataPortOpenCloseButtonText = "Open";
+
+               if(App.dataSerialConnection.CloseComPort())
+                {
+                    DataPortOpenCloseButtonText = "Open";
+                }else
+                {
+                    DataPortOpenCloseButtonText = "Close";
+                }
             }
             else
             {
-                App.dataSerialConnection.OpenComPort();
-                App.screenDataModel.RequestScreenDataFromDevice();
-                DataPortOpenCloseButtonText = "Close";
+                if(App.dataSerialConnection.OpenComPort())
+                {
+                    DataPortOpenCloseButtonText = "Close";
+                    App.screenDataModel.RequestScreenDataFromDevice();
+                }
+                else
+                {
+                    DataPortOpenCloseButtonText = "Open";
+                }
             }
         }
 

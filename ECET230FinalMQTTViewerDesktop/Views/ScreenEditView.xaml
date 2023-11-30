@@ -191,15 +191,17 @@
                 Text="Program to Device"
                 FontSize="Medium"
                 Margin="20"
-                Command="{Binding ProgramScreenDataCommand}"/>
+                Command="{Binding ProgramScreenDataCommand}"
+                IsEnabled="{Binding SerialConnectionModel.ComPortIsOpen}"/>
             <Button
                 Text="Download from Device"
                 FontSize="Medium"
                 Margin="20"
-                Command="{Binding RequestScreenDataCommand}"/>
+                Command="{Binding RequestScreenDataCommand}"
+                IsEnabled="{Binding SerialConnectionModel.ComPortIsOpen}"/>
         </HorizontalStackLayout>
         <Label
-            Text="Program Status"
+            Text="{Binding SerialConnectionModel.ConnectionStatusText}"
             Margin="20"
             FontSize="Medium"/>
     </VerticalStackLayout>

@@ -136,7 +136,7 @@ namespace ECET230FinalMQTTViewerDesktop.Models
         }
         public void RemoveScreen(int index) 
         {
-            if(index < _screenData.Indicators.GetLength(0))
+            if(index < _screenData.Indicators.GetLength(0) && _screenData.Indicators.Length != 0 && index != -1)
             {
                 IndicatorData[][] newIndicators = new IndicatorData[_screenData.Indicators.GetLength(0) - 1][];
 
