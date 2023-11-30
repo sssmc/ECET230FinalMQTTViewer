@@ -33,6 +33,8 @@ namespace ECET230FinalMQTTViewerMeadow
 
         private IFont mediumFont = new Font12x16();
 
+        private IFont largeFont = new Font12x20();
+
         public Screen(ScreenData screenData, MicroGraphics graphics)
         {
             this.screenData = screenData;
@@ -53,6 +55,7 @@ namespace ECET230FinalMQTTViewerMeadow
 
             if (displayAlert)
             {
+                graphics.CurrentFont = largeFont;
                 graphics.DrawText(5, 120, alertText);
             }
             else

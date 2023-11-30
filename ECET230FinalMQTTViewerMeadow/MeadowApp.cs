@@ -77,7 +77,7 @@ namespace ECET230FinalMQTTViewerMeadow
 
         onboardLed.SetColor(Color.Yellow);
 
-        switchPageButton = new PushButton(Device.Pins.D10, ResistorMode.InternalPullUp, TimeSpan.FromMilliseconds(0.02));
+        switchPageButton = new PushButton(Device.Pins.D10, ResistorMode.InternalPullUp, TimeSpan.FromMilliseconds(0.002));
         switchPageButton.Clicked += SwitchPageButton_Clicked;
 
         //Connect to TFT Display
@@ -269,7 +269,10 @@ namespace ECET230FinalMQTTViewerMeadow
                     }else if(data.Substring(2, 1) == "1")
                     {
                         Console.WriteLine("Data Request Packet Recevied");
+                        screen.alertText = "Sending Data";
+                        screen.drawScreen();
                         SendDataPacket();
+                        screen.displayAlert = false;
                         haveHeaderData = false;
                         payloadLength = 0;
                         serialPort.ClearReceiveBuffer();
@@ -323,7 +326,8 @@ namespace ECET230FinalMQTTViewerMeadow
                     payloadLength = 0;
                     serialPort.ClearReceiveBuffer();
                     serialTimeoutTimer.Stop();
-
+                    screen.mqttStatusText = "Updating MQTT Info";
+                    screen.drawScreen();
                     Console.WriteLine("Updating Screen...");
                     ScreenData newScreenData = new ScreenData();
                     newScreenData = JsonSerializer.Deserialize<ScreenData>(payload);
@@ -417,22 +421,6 @@ namespace ECET230FinalMQTTViewerMeadow
                 screen.currentScreen = 0;
             }
             screen.drawScreen();
-        }
-
-        private async void disconnectFromWifi()
-        {
-            //Disconnect from Wifi
-            Resolver.Log.Info($"Disconnecting from Wifi SSID: {screen.screenData.Connection.WifiSSID}");
-
-            try
-            {
-                var wifi = Device.NetworkAdapters.Primary<IWiFiNetworkAdapter>();
-                await wifi.Disconnect(false);
-            }
-            catch (Exception ex)
-            {
-                Resolver.Log.Error($"Failed to Disconnect from Wifi: : {ex.Message}");
-            }
         }
 
         private async void connectToWifi()
@@ -541,7 +529,7 @@ namespace ECET230FinalMQTTViewerMeadow
         private async Task Client_DisconnectedAsync(MqttClientDisconnectedEventArgs e)
         {
             Console.WriteLine("Disconnected from MQTT server");
-            screen.mqttStatusText = "Disconnected to MQTT";
+            screen.mqttStatusText = "Disconnected from MQTT";
             screen.drawScreen();
             await Task.Delay(TimeSpan.FromSeconds(5));
             try
