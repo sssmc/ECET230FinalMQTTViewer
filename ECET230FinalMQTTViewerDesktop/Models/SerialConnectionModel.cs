@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System.IO.Ports;
+using System.Text;
 
 namespace ECET230FinalMQTTViewerDesktop.Models
 {
@@ -64,16 +65,49 @@ namespace ECET230FinalMQTTViewerDesktop.Models
 
         public event EventHandler ComPortClosed;
 
+        public SerialConnectionModel(bool useReadLine)
+        {
+            _serialPort = new SerialPort();
+            _comPortIsOpen = false;
+            _baudRate = 4800;
+            _serialPort.BaudRate = _baudRate;
+            if (useReadLine)
+            {
+                _serialPort.DataReceived += SerialPort_DataReceivedReadLine;
+            }
+            else
+            {
+                _serialPort.DataReceived += SerialPort_DataReceived;
+            }
+        }
+
         public SerialConnectionModel()
         {
             _serialPort = new SerialPort();
             _comPortIsOpen = false;
             _baudRate = 4800;
             _serialPort.BaudRate = _baudRate;
-            _serialPort.DataReceived += SerialPort_DataReceived;
+            _serialPort.DataReceived += SerialPort_DataReceivedReadLine;
         }
 
         private void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
+        {
+            DataReceivedEventArgs args = new DataReceivedEventArgs();
+            try
+            {
+
+                byte[] buffer;
+                _serialPort.Read(buffer = new byte[_serialPort.BytesToRead], 0, _serialPort.BytesToRead);
+                args.data = Encoding.ASCII.GetString(buffer);
+                DataReceived?.Invoke(this, args);
+            }
+            catch
+            {
+                //Serial port was closed while reading
+            }
+        }
+
+        private void SerialPort_DataReceivedReadLine(object sender, SerialDataReceivedEventArgs e)
         {
             DataReceivedEventArgs args = new DataReceivedEventArgs();
             try { 

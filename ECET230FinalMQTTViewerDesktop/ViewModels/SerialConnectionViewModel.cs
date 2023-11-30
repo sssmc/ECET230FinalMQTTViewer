@@ -62,7 +62,7 @@ namespace ECET230FinalMQTTViewerDesktop.ViewModels
 
         private void DebugSerialConnection_DataReceived(object sender, DataReceivedEventArgs e)
         {
-            DebugPortReceivedData += (e.data + '\n');
+            DebugPortReceivedData += (e.data);
         }
 
         [RelayCommand]
@@ -108,7 +108,14 @@ namespace ECET230FinalMQTTViewerDesktop.ViewModels
             }
         }
 
-        
+        [RelayCommand]
+        void RefreshComPorts()
+        {
+            OnPropertyChanged(nameof(DataPortNames));
+            OnPropertyChanged(nameof(DebugPortNames));
+        }
+
+
 
     }
 }

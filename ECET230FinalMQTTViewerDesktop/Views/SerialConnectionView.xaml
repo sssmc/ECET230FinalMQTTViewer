@@ -8,64 +8,112 @@
     <ContentPage.BindingContext>
         <local:SerialConnectionViewModel/>
     </ContentPage.BindingContext>
-    <HorizontalStackLayout>
-            <VerticalStackLayout>
-                <VerticalStackLayout>
-                    <Label
-                    Text="Data COM Port"
-                    VerticalOptions="Center"
-                    FontSize="Medium"
+    <Grid
+        Margin="30,30,0,100"
+        ColumnSpacing="30">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Label
+            Grid.Column="0"
+            Grid.Row="0"
+            Text="Data COM Port"
+            VerticalOptions="Center"
+            FontSize="Medium"
+            Margin="20"/>
+        <HorizontalStackLayout
+            Grid.Column="0"
+            Grid.Row="1">
+            <Picker 
+                    ItemsSource="{Binding DataPortNames}"
+                    SelectedItem="{Binding DataPortName}"
                     Margin="20"/>
-                    <HorizontalStackLayout>
-                        <Picker 
-                        ItemsSource="{Binding DataPortNames}"
-                        SelectedItem="{Binding DataPortName}"
-                        Margin="20"/>
-                        <Button
-                        Text="{Binding DataPortOpenCloseButtonText}"
-                        Command="{Binding DataPortOpenCloseCommand}"
-                        HeightRequest="50"
-                        VerticalOptions="Start"
-                        Margin="20"
-                        />
-                    </HorizontalStackLayout>
-                </VerticalStackLayout>
-            </VerticalStackLayout>
-            <VerticalStackLayout>
-                <Label
-                Text="Debug COM Port"
-                VerticalOptions="Center"
-                FontSize="Medium"
-                Margin="20"/>
-                <HorizontalStackLayout>
-                    <Picker 
-                        ItemsSource="{Binding DebugPortNames}"
-                        SelectedItem="{Binding DebugPortName}"
-                        Margin="20"/>
-                    <Button
-                        Text="{Binding DebugPortOpenCloseButtonText}"
-                        Command="{Binding DebugPortOpenCloseCommand}"
-                        HeightRequest="50"
-                        VerticalOptions="Start"
-                        Margin="20"/>
-                </HorizontalStackLayout>
-            </VerticalStackLayout>
-            <VerticalStackLayout>
-                <Label
-                    Text="Debug Log"
-                    FontSize="Medium"
-                    HorizontalOptions="Center"/>
-            <ScrollView>
-                <StackLayout>
-                    <Label
-                    Text="{Binding DebugPortReceivedData}"
-                    FontSize="14"
-                    HorizontalOptions="Center"
-                    VerticalOptions="StartAndExpand"
-                    MaximumHeightRequest="500"/>
-                </StackLayout>
-            </ScrollView>
-
-            </VerticalStackLayout>
+            <Button
+                    Text="{Binding DataPortOpenCloseButtonText}"
+                    Command="{Binding DataPortOpenCloseCommand}"
+                    HeightRequest="50"
+                    VerticalOptions="Start"
+                    Margin="20"
+                    />
         </HorizontalStackLayout>
+        <Label
+            Grid.Column="0"
+            Grid.Row="3"
+            Text="Debug COM Port"
+            VerticalOptions="Center"
+            FontSize="Medium"
+            Margin="20"/>
+        <HorizontalStackLayout
+            Grid.Column="0"
+            Grid.Row="4">
+            <Picker 
+                ItemsSource="{Binding DebugPortNames}"
+                SelectedItem="{Binding DebugPortName}"
+                Margin="20"/>
+            <Button
+                Text="{Binding DebugPortOpenCloseButtonText}"
+                Command="{Binding DebugPortOpenCloseCommand}"
+                HeightRequest="50"
+                VerticalOptions="Start"
+                Margin="20"/>
+        </HorizontalStackLayout>
+        <Button
+            Grid.Column="0"
+            Grid.Row="5"
+            Text="Refresh"
+            Command="{Binding RefreshComPortsCommand}"
+            HeightRequest="50"
+            VerticalOptions="Start"
+            Margin="20"/>
+        <Label
+                Grid.Column="2"
+                Grid.Row="0"
+                Text="Debug Log"
+                FontSize="Medium"
+                HorizontalOptions="Start"
+                Margin="20"/>
+        <ScrollView
+            x:Name="scrollView"
+            VerticalScrollBarVisibility="Always"
+            Grid.Column="2"
+            Grid.Row="1"
+            Grid.RowSpan="6"
+            VerticalOptions="FillAndExpand"
+            WidthRequest="500"
+            Padding="20"
+            BackgroundColor="LightGrey">
+            <Label
+                x:Name="scrollViewLabel"
+                Text="{Binding DebugPortReceivedData}"
+                FontSize="14"
+                HorizontalOptions="Center"
+                VerticalOptions="Start"/>
+        </ScrollView>
+        <HorizontalStackLayout
+            Margin="0,0,0,-60"
+            Grid.Column="2"
+            Grid.Row="7">
+            <Label
+                Text="Auto Scroll"
+                FontSize="Small"
+                HorizontalOptions="Center"
+                VerticalOptions="Center"
+                Margin="20"/>
+        <CheckBox
+            x:Name="autoScrollCheckbox"
+            IsChecked="True"
+            VerticalOptions="Center"
+            Margin="0"/>
+        </HorizontalStackLayout>
+    </Grid>
 </ContentPage>

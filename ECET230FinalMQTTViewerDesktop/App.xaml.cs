@@ -11,7 +11,7 @@
         {
             dataSerialConnection = new ECET230FinalMQTTViewerDesktop.Models.SerialConnectionModel();
 
-            debugSerialConnection = new ECET230FinalMQTTViewerDesktop.Models.SerialConnectionModel();
+            debugSerialConnection = new ECET230FinalMQTTViewerDesktop.Models.SerialConnectionModel(false);
 
             screenDataModel = new ECET230FinalMQTTViewerDesktop.Models.ScreenDataModel();
 
