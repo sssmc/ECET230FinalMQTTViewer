@@ -63,7 +63,7 @@ namespace ECET230FinalMQTTViewerDesktop.ViewModels
         public SerialConnectionViewModel()
         {
             App.debugSerialConnection.DataReceived += DebugSerialConnection_DataReceived;
-            App.debugSerialConnection.baudRate = 9600;
+            App.debugSerialConnection.BaudRate = 9600;
         }
 
         private void DebugSerialConnection_DataReceived(object sender, DataReceivedEventArgs e)

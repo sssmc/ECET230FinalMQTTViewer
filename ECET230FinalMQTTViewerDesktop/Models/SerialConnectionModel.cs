@@ -4,19 +4,31 @@ using System.Text;
 
 namespace ECET230FinalMQTTViewerDesktop.Models
 {
+
+    /// <summary>
+    /// Model for the serial connection behavior.
+    /// </summary>
     public partial class SerialConnectionModel : ObservableObject
     {
+        /// <summary>
+        /// Serial port object.
+        /// </summary>
         private SerialPort _serialPort;
 
+        /// <summary>
+        /// Status of the serial port.
+        /// </summary>
         [ObservableProperty]
         private bool _comPortIsOpen;
 
-        [ObservableProperty]
-        private int _baudRate;
-
+        /// <summary>
+        /// Text to display for the serial port status.
+        /// </summary>
         [ObservableProperty]
         private string _connectionStatusText;
 
+        /// <summary>
+        /// All current com port names.
         public string[] comPortNames
         {
             get
@@ -25,7 +37,11 @@ namespace ECET230FinalMQTTViewerDesktop.Models
             }
         }
 
-        public int baudRate
+
+        /// <summary>
+        /// Current Baud Rate.
+        /// </summary>
+        public int BaudRate
         {
             get
             {
@@ -41,6 +57,9 @@ namespace ECET230FinalMQTTViewerDesktop.Models
             }
         }
 
+        /// <summary>
+        /// Current com port name.
+        /// </summary>
         public string comPortName
         {
             get
@@ -57,19 +76,34 @@ namespace ECET230FinalMQTTViewerDesktop.Models
             }
         }
 
+        /// <summary>
+        /// Serial port data received event.
+        /// </summary>
         public event EventHandler<DataReceivedEventArgs> DataReceived;
 
+        /// <summary>
+        /// Com port opened event.
+        /// </summary>
         public event EventHandler ComPortOpened;
 
+        /// <summary>
+        /// Com port closed event.
+        /// </summary>
         public event EventHandler ComPortClosed;
 
+        /// <summary>
+        /// Creates a new serial connection model.
+        /// </summary>
+        /// <param name="useReadLine">Use readline to read from the serial port or read all bytes in the buffer</param>
         public SerialConnectionModel(bool useReadLine)
         {
+            //Create the serial port object.
             _serialPort = new SerialPort();
+
             ComPortIsOpen = false;
             ConnectionStatusText = "Serial Port Not Connected";
-            _baudRate = 4800;
-            _serialPort.BaudRate = _baudRate;
+            BaudRate = 4800;
+
             if (useReadLine)
             {
                 _serialPort.DataReceived += SerialPort_DataReceivedReadLine;
@@ -80,25 +114,40 @@ namespace ECET230FinalMQTTViewerDesktop.Models
             }
         }
 
+        /// <summary>
+        /// Creates a new serial connection model.
+        /// </summary>
         public SerialConnectionModel()
         {
+            //Create the serial port object.
             _serialPort = new SerialPort();
+
             ComPortIsOpen = false;
             ConnectionStatusText = "Serial Port Not Connected";
-            _baudRate = 4800;
-            _serialPort.BaudRate = _baudRate;
+            BaudRate = 4800;
+
             _serialPort.DataReceived += SerialPort_DataReceivedReadLine;
         }
 
+        /// <summary>
+        /// Executes when data is received from the serial port.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             DataReceivedEventArgs args = new DataReceivedEventArgs();
             try
             {
                 ConnectionStatusText = "Serial Port Receiving Data...";
+
+                //Read all bytes in the buffer.
                 byte[] buffer;
                 _serialPort.Read(buffer = new byte[_serialPort.BytesToRead], 0, _serialPort.BytesToRead);
+
+                //Convert the bytes to a string.
                 args.data = Encoding.ASCII.GetString(buffer);
+
                 DataReceived?.Invoke(this, args);
                 ConnectionStatusText = "Serial Port Data Received";
             }
@@ -108,6 +157,11 @@ namespace ECET230FinalMQTTViewerDesktop.Models
             }
         }
 
+        /// <summary>
+        /// Executes when data is received from the serial port.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void SerialPort_DataReceivedReadLine(object sender, SerialDataReceivedEventArgs e)
         {
             DataReceivedEventArgs args = new DataReceivedEventArgs();
