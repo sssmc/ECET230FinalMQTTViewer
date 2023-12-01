@@ -1,7 +1,7 @@
 ﻿using MQTTScreenData;
 using MQTTSConnectionData;
+
 using System.Text.Json;
-using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ECET230FinalMQTTViewerDesktop.Models
 {

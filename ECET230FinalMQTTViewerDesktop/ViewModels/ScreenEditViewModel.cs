@@ -1,28 +1,44 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+
 using ECET230FinalMQTTViewerDesktop.Models;
 using MQTTScreenData;
 
 namespace ECET230FinalMQTTViewerDesktop.ViewModels
 {
+
+    /// <summary>
+    /// View model for the screen edit view.
+    /// </summary>
     partial class ScreenEditViewModel : ObservableValidator
     {
 
+        /// <summary>
+        /// Reference to the screen data model.
+        /// </summary>
         [ObservableProperty]
         private ScreenDataModel _screenDataModel;
 
+        /// <summary>
+        /// Currently selected screen index.
+        /// </summary>
         [ObservableProperty]
         public int _currentScreenIndex;
 
-        [ObservableProperty]
-        private int _currentIndicatorIndex;
-
+        /// <summary>
+        /// The currently selected indicator.
+        /// </summary>
         [ObservableProperty]
         private IndicatorData _selectedIndicator;
 
+        /// <summary>
+        /// Reference to the data serial connection model.
+        /// </summary>
         [ObservableProperty]
         private SerialConnectionModel _serialConnectionModel = App.dataSerialConnection;
 
+        /// <summary>
+        /// A list of all the screen names.
         public string[] ScreenNames
         {
             get
@@ -30,12 +46,16 @@ namespace ECET230FinalMQTTViewerDesktop.ViewModels
                 string[] screenNames = new string[ScreenDataModel.ScreenCount];
                 for (int i = 0; i < ScreenDataModel.ScreenCount; i++)
                 {
+                    //Generate a screen name from the screen index.
                     screenNames[i] = $"Screen {i + 1}";
                 }
                 return screenNames;
             }
         }
 
+        /// <summary>
+        /// The names of the indicators on the current screen.
+        /// </summary>
         public string[] CurrentScreenIndicatorNames
         {
             get
@@ -49,6 +69,9 @@ namespace ECET230FinalMQTTViewerDesktop.ViewModels
             }
         }
 
+        /// <summary>
+        /// The indicators on the current screen.
+        /// </summary>
         public List<IndicatorData> CurrentScreenIndicators
         {
             get
@@ -60,11 +83,16 @@ namespace ECET230FinalMQTTViewerDesktop.ViewModels
         public ScreenEditViewModel()
         {
             ScreenDataModel = App.screenDataModel;
+
             CurrentScreenIndex = 0;
+
             ScreenDataModel.ScreenDataUpdated += _screenDataModel_ScreenDataUpdated;
             ScreenDataModel.RequestScreenDataFromDevice();
         }
 
+        /// <summary>
+        /// Executes when the screen data is updated.
+        /// </summary>
         private void _screenDataModel_ScreenDataUpdated(object sender, EventArgs e)
         {    
             OnPropertyChanged(nameof(ScreenNames));
@@ -74,6 +102,11 @@ namespace ECET230FinalMQTTViewerDesktop.ViewModels
             SelectedIndicator = null;
         }
 
+        /// <summary>
+        /// Executes when the current screen index is changed.
+        /// </summary>
+        /// <param name="oldValue"></param>
+        /// <param name="newValue"></param>
         partial void OnCurrentScreenIndexChanged(int oldValue, int newValue)
         {
             OnPropertyChanged(nameof(CurrentScreenIndicatorNames));
@@ -81,18 +114,27 @@ namespace ECET230FinalMQTTViewerDesktop.ViewModels
 
         }
 
+        /// <summary>
+        /// Relay command for programming the screen data to the device.
+        /// </summary>
         [RelayCommand]
         void ProgramScreenData()
         {
             ScreenDataModel.SendScreenDataToDevice();
         }
 
+        /// <summary>
+        /// Relay command for requesting the screen data from the device.
+        /// </summary>
         [RelayCommand]
         void RequestScreenData()
         {
             ScreenDataModel.RequestScreenDataFromDevice();
         }
 
+        /// <summary>
+        /// Relay command for adding the selected indicator to the current screen.
+        /// </summary>
         [RelayCommand]
         void AddIndicator()
         {
@@ -104,6 +146,9 @@ namespace ECET230FinalMQTTViewerDesktop.ViewModels
 
         }
 
+        /// <summary>
+        /// Relay command for removing the selected indicator from the current screen.
+        /// </summary>
         [RelayCommand]
         void RemoveIndicator()
         {
@@ -117,6 +162,9 @@ namespace ECET230FinalMQTTViewerDesktop.ViewModels
             OnPropertyChanged(nameof(CurrentScreenIndicators));
         }
 
+        /// <summary>
+        /// Relay command to add a new screen.
+        /// </summary>
         [RelayCommand]
         void AddScreen()
         {
@@ -124,6 +172,9 @@ namespace ECET230FinalMQTTViewerDesktop.ViewModels
             OnPropertyChanged(nameof(ScreenNames));
         }
 
+        /// <summary>
+        /// Relay command to remove the current screen.
+        /// </summary>
         [RelayCommand]
         void RemoveScreen()
         {

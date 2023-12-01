@@ -167,7 +167,10 @@ namespace ECET230FinalMQTTViewerDesktop.Models
             DataReceivedEventArgs args = new DataReceivedEventArgs();
             try {
                 ConnectionStatusText = "Serial Port Receiving Data...";
+
+                //Read a line from the serial port.
                 args.data = _serialPort.ReadLine();
+
                 DataReceived?.Invoke(this, args);
                 ConnectionStatusText = "Serial Port Data Received";
             }
@@ -178,6 +181,10 @@ namespace ECET230FinalMQTTViewerDesktop.Models
             
         }
 
+        /// <summary>
+        /// Opens the serial port.
+        /// </summary>
+        /// <returns>If the opening was sucessfull</returns>
         public bool OpenComPort()
         {
             try
@@ -196,6 +203,10 @@ namespace ECET230FinalMQTTViewerDesktop.Models
             }
         }
 
+        /// <summary>
+        /// Closes the serial port.
+        /// </summary>
+        /// <returns>If the closing was sucessfull</returns>
         public bool CloseComPort()
         {
             _serialPort.Close();
@@ -204,6 +215,11 @@ namespace ECET230FinalMQTTViewerDesktop.Models
             ComPortClosed?.Invoke(this, new EventArgs());
             return true;
         }
+
+        /// <summary>
+        /// Writes a line to the serial port.
+        /// </summary>
+        /// <param name="data">Data to write</param>
         public void WriteLine(string data)
         {
             ConnectionStatusText = "Serial Port Sending Data...";
@@ -227,8 +243,14 @@ namespace ECET230FinalMQTTViewerDesktop.Models
         }
     }
 
+    /// <summary>
+    /// Class for the data received event.
+    /// </summary>
     public class DataReceivedEventArgs : EventArgs
     {
+        /// <summary>
+        /// Data received from the serial port.
+        /// </summary>
         public string data { get; set; }
     }
 
