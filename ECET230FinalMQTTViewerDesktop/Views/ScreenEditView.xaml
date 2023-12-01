@@ -7,202 +7,204 @@
         <local:ScreenEditViewModel/>
     </ContentPage.BindingContext>
 
-    <VerticalStackLayout>
-        <HorizontalStackLayout>
-            <VerticalStackLayout>
-                <Label Text="WiFi Connection"
-                       FontSize="Medium"
-                       Margin="20"/>
-                <Grid
-                    RowSpacing="20">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="170"/>
-                        <ColumnDefinition Width="200"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-                    <Label Grid.Column="0"
-                           Text="SSID:"
+    <ScrollView>
+        <VerticalStackLayout>
+            <HorizontalStackLayout>
+                <VerticalStackLayout>
+                    <Label Text="WiFi Connection"
                            FontSize="Medium"
                            Margin="20"/>
-                    <Entry 
-                            Grid.Column="1"
-                            Text="{Binding ScreenDataModel.Connection.WifiSSID}"/>
-                    <Label 
-                            Grid.Column="0"
-                            Grid.Row="1"
-                            Text="Password:"
+                    <Grid
+                        RowSpacing="20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="170"/>
+                            <ColumnDefinition Width="200"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Label Grid.Column="0"
+                               Text="SSID:"
+                               FontSize="Medium"
+                               Margin="20"/>
+                        <Entry 
+                                Grid.Column="1"
+                                Text="{Binding ScreenDataModel.Connection.WifiSSID}"/>
+                        <Label 
+                                Grid.Column="0"
+                                Grid.Row="1"
+                                Text="Password:"
+                                FontSize="Medium"
+                                Margin="20"/>
+                        <Entry  Grid.Column="1"
+                                Grid.Row="1"
+                                Text="{Binding ScreenDataModel.Connection.WifiPassword}"/>
+                    </Grid>
+                    <Label Text="MQTT Connection"
+                           FontSize="Medium"
+                           Margin="20"/>
+                    <Grid
+                        RowSpacing="20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="170"/>
+                            <ColumnDefinition Width="200"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Label 
+                               Grid.Column="0"
+                               Grid.Row="0"
+                               Text="Broker:"
+                               FontSize="Medium"
+                               Margin="20"/>
+                        <Entry 
+                                Grid.Column="1"
+                                Grid.Row="0"
+                                Text="{Binding ScreenDataModel.Connection.MQTTHost}"/>
+                        <Label 
+                                Grid.Column="0"
+                                Grid.Row="1"
+                                Text="Port:"
+                               FontSize="Medium"
+                               Margin="20"/>
+                        <Entry 
+                                Grid.Column="1"
+                                Grid.Row="1"
+                                Text="{Binding ScreenDataModel.Connection.MQTTPort}"/>
+                        <Label 
+                               Grid.Column="0"
+                                Grid.Row="2"
+                               Text="Client ID:"
+                               FontSize="Medium"
+                               Margin="20"/>
+                        <Entry 
+                                Grid.Column="1"
+                                Grid.Row="2"
+                                Text="{Binding ScreenDataModel.Connection.MQTTClientId}"/>
+                        <Label 
+                                Grid.Column="0"
+                                Grid.Row="3"
+                               Text="User Name:"
+                               FontSize="Medium"
+                               Margin="20"/>
+                        <Entry 
+                                Grid.Column="1"
+                                Grid.Row="3"
+                                Text="{Binding ScreenDataModel.Connection.MQTTUsername}"/>
+                        <Label 
+                                Grid.Column="0"
+                                Grid.Row="4"
+                                Text="Password:"
+                               FontSize="Medium"
+                               Margin="20"/>
+                        <Entry 
+                                Grid.Row="4"
+                                Grid.Column="1"
+                                Text="{Binding ScreenDataModel.Connection.MQTTPassword}"/>
+                    </Grid>
+                </VerticalStackLayout>
+                <VerticalStackLayout
+                    Margin="100,0,0,0">
+                    <Label Text="Screens"
+                           Margin="20"
+                           FontSize="Large"/>
+                    <HorizontalStackLayout>
+                        <Picker
+                            Margin="20"
                             FontSize="Medium"
-                            Margin="20"/>
-                    <Entry  Grid.Column="1"
-                            Grid.Row="1"
-                            Text="{Binding ScreenDataModel.Connection.WifiPassword}"/>
-                </Grid>
-                <Label Text="MQTT Connection"
-                       FontSize="Medium"
-                       Margin="20"/>
-                <Grid
-                    RowSpacing="20">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="170"/>
-                        <ColumnDefinition Width="200"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-                    <Label 
-                           Grid.Column="0"
-                           Grid.Row="0"
-                           Text="Broker:"
-                           FontSize="Medium"
-                           Margin="20"/>
-                    <Entry 
-                            Grid.Column="1"
-                            Grid.Row="0"
-                            Text="{Binding ScreenDataModel.Connection.MQTTHost}"/>
-                    <Label 
-                            Grid.Column="0"
-                            Grid.Row="1"
-                            Text="Port:"
-                           FontSize="Medium"
-                           Margin="20"/>
-                    <Entry 
-                            Grid.Column="1"
-                            Grid.Row="1"
-                            Text="{Binding ScreenDataModel.Connection.MQTTPort}"/>
-                    <Label 
-                           Grid.Column="0"
-                            Grid.Row="2"
-                           Text="Client ID:"
-                           FontSize="Medium"
-                           Margin="20"/>
-                    <Entry 
-                            Grid.Column="1"
-                            Grid.Row="2"
-                            Text="{Binding ScreenDataModel.Connection.MQTTClientId}"/>
-                    <Label 
-                            Grid.Column="0"
-                            Grid.Row="3"
-                           Text="User Name:"
-                           FontSize="Medium"
-                           Margin="20"/>
-                    <Entry 
-                            Grid.Column="1"
-                            Grid.Row="3"
-                            Text="{Binding ScreenDataModel.Connection.MQTTUsername}"/>
-                    <Label 
-                            Grid.Column="0"
-                            Grid.Row="4"
-                            Text="Password:"
-                           FontSize="Medium"
-                           Margin="20"/>
-                    <Entry 
-                            Grid.Row="4"
-                            Grid.Column="1"
-                            Text="{Binding ScreenDataModel.Connection.MQTTPassword}"/>
-                </Grid>
-            </VerticalStackLayout>
-            <VerticalStackLayout
-                Margin="100,0,0,0">
-                <Label Text="Screens"
-                       Margin="20"
-                       FontSize="Large"/>
-                <HorizontalStackLayout>
-                    <Picker
-                        Margin="20"
-                        FontSize="Medium"
-                        ItemsSource="{Binding ScreenNames}"
-                        SelectedIndex="{Binding CurrentScreenIndex}"/>
-                    <Button
-                        Text="Add Screen"
-                        FontSize="Medium"
-                        Margin="20"
-                        Command="{Binding AddScreenCommand}"/>
-                    <Button
-                        Text="Delete Screen"
-                        FontSize="Medium"
-                        Margin="20"
-                        Command="{Binding RemoveScreenCommand}"/>
-                </HorizontalStackLayout>
+                            ItemsSource="{Binding ScreenNames}"
+                            SelectedIndex="{Binding CurrentScreenIndex}"/>
+                        <Button
+                            Text="Add Screen"
+                            FontSize="Medium"
+                            Margin="20"
+                            Command="{Binding AddScreenCommand}"/>
+                        <Button
+                            Text="Delete Screen"
+                            FontSize="Medium"
+                            Margin="20"
+                            Command="{Binding RemoveScreenCommand}"/>
+                    </HorizontalStackLayout>
 
-                <CollectionView
-                        Margin="20,0,0,0"
-                        ItemsSource="{Binding CurrentScreenIndicators}"
-                        SelectionMode="Single"
-                        SelectedItem="{Binding SelectedIndicator}">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate>
-                            <Grid
-                                    ColumnSpacing="10"
-                                    Padding="10">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="125"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="250"/>
-                                </Grid.ColumnDefinitions>
-                                <Label
-                                        Grid.Column="0"
-                                        Text="Name:"
-                                        FontAttributes="Bold"
-                                        VerticalOptions="Center"/>
-                                <Entry
-                                        Text="{Binding Name}"
-                                        Grid.Column="1"
-                                        VerticalOptions="Center"/>
-                                <Label
-                                        Grid.Column="2"
-                                        Text="Topic:" 
-                                        VerticalOptions="Center"/>
-                                <Entry
-                                        Grid.Column="3"
-                                        Text="{Binding Topic}"/>
-                            </Grid>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                    <CollectionView.ItemsLayout>
-                        <LinearItemsLayout Orientation="Vertical"
-                                                ItemSpacing="10" />
-                    </CollectionView.ItemsLayout>
-                </CollectionView>
-                <HorizontalStackLayout>
-                    <Button
-                            Text="Add Indicator"
-                            FontSize="Medium"
-                            Margin="20"
-                            Command="{Binding AddIndicatorCommand}"/>
-                    <Button
-                            Text="Delete Indicator"
-                            FontSize="Medium"
-                            Margin="20"
-                            Command="{Binding RemoveIndicatorCommand}"/>
-                </HorizontalStackLayout>
-            </VerticalStackLayout>
-        </HorizontalStackLayout>
-        <HorizontalStackLayout
-            Margin="0,30,0,0">
-            <Button
-                Text="Program to Device"
-                FontSize="Medium"
+                    <CollectionView
+                            Margin="20,0,0,0"
+                            ItemsSource="{Binding CurrentScreenIndicators}"
+                            SelectionMode="Single"
+                            SelectedItem="{Binding SelectedIndicator}">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid
+                                        ColumnSpacing="10"
+                                        Padding="10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="125"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="250"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Label
+                                            Grid.Column="0"
+                                            Text="Name:"
+                                            FontAttributes="Bold"
+                                            VerticalOptions="Center"/>
+                                    <Entry
+                                            Text="{Binding Name}"
+                                            Grid.Column="1"
+                                            VerticalOptions="Center"/>
+                                    <Label
+                                            Grid.Column="2"
+                                            Text="Topic:" 
+                                            VerticalOptions="Center"/>
+                                    <Entry
+                                            Grid.Column="3"
+                                            Text="{Binding Topic}"/>
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                        <CollectionView.ItemsLayout>
+                            <LinearItemsLayout Orientation="Vertical"
+                                                    ItemSpacing="10" />
+                        </CollectionView.ItemsLayout>
+                    </CollectionView>
+                    <HorizontalStackLayout>
+                        <Button
+                                Text="Add Indicator"
+                                FontSize="Medium"
+                                Margin="20"
+                                Command="{Binding AddIndicatorCommand}"/>
+                        <Button
+                                Text="Delete Indicator"
+                                FontSize="Medium"
+                                Margin="20"
+                                Command="{Binding RemoveIndicatorCommand}"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </HorizontalStackLayout>
+            <HorizontalStackLayout
+                Margin="0,30,0,0">
+                <Button
+                    Text="Program to Device"
+                    FontSize="Medium"
+                    Margin="20"
+                    Command="{Binding ProgramScreenDataCommand}"
+                    IsEnabled="{Binding SerialConnectionModel.ComPortIsOpen}"/>
+                <Button
+                    Text="Download from Device"
+                    FontSize="Medium"
+                    Margin="20"
+                    Command="{Binding RequestScreenDataCommand}"
+                    IsEnabled="{Binding SerialConnectionModel.ComPortIsOpen}"/>
+            </HorizontalStackLayout>
+            <Label
+                Text="{Binding SerialConnectionModel.ConnectionStatusText}"
                 Margin="20"
-                Command="{Binding ProgramScreenDataCommand}"
-                IsEnabled="{Binding SerialConnectionModel.ComPortIsOpen}"/>
-            <Button
-                Text="Download from Device"
-                FontSize="Medium"
-                Margin="20"
-                Command="{Binding RequestScreenDataCommand}"
-                IsEnabled="{Binding SerialConnectionModel.ComPortIsOpen}"/>
-        </HorizontalStackLayout>
-        <Label
-            Text="{Binding SerialConnectionModel.ConnectionStatusText}"
-            Margin="20"
-            FontSize="Medium"/>
-    </VerticalStackLayout>
+                FontSize="Medium"/>
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

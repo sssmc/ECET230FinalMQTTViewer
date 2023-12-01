@@ -21,6 +21,6 @@ public partial class SerialConnectionView : ContentPage
 
 	private async void ScrollView_Scroll()
 	{
-        await scrollView.ScrollToAsync(0,1000000, true);
+        await scrollView.ScrollToAsync(scrollViewLabel, ScrollToPosition.End,true);
     }
 }
